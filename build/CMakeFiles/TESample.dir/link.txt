@@ -1,0 +1,1 @@
+/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc -Ofast -Wuninitialized -Wmaybe-uninitialized -mcpu=68000 -mtune=68000 -m68000 -Wall   CMakeFiles/TESample.dir/SerialHelper.c.obj CMakeFiles/TESample.dir/coprocessorjs.c.obj CMakeFiles/TESample.dir/TESample.c.obj  -o TESample.code.bin 

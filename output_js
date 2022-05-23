@@ -1,0 +1,25 @@
+index.js@@@
+class FocusedEdit {
+
+    sendKeyDown (key) {
+
+        console.log(`key received: ${key}`)
+
+        return `ACK`
+    }
+}
+
+module.exports = FocusedEdit
+&&&
+package.json@@@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
