@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/programmer/TESample
+CMAKE_SOURCE_DIR = /home/camh/Documents/Retro68kApps/TESample
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/programmer/TESample/build
+CMAKE_BINARY_DIR = /home/camh/Documents/Retro68kApps/TESample/build
 
 # Utility rule file for TESample_APPL.
 
@@ -58,8 +58,8 @@ CMakeFiles/TESample_APPL: TESample.bin
 
 TESample.bin: TESample.code.bin
 TESample.bin: TESample.r.rsrc.bin
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/programmer/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating TESample.bin, TESample.APPL, TESample.dsk, TESample.ad, %TESample.ad"
-	/home/programmer/Retro68-build/toolchain/bin/Rez /home/programmer/Retro68-build/toolchain/m68k-apple-macos/RIncludes/Retro68APPL.r -I/home/programmer/Retro68-build/toolchain/m68k-apple-macos/RIncludes --copy TESample.code.bin -o TESample.bin -t APPL -c ???? --cc TESample.dsk --cc TESample.APPL --cc %TESample.ad /home/programmer/TESample/build/TESample.r.rsrc.bin
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating TESample.bin, TESample.APPL, TESample.dsk, TESample.ad, %TESample.ad"
+	/home/camh/Retro68-build/toolchain/bin/Rez /home/camh/Retro68-build/toolchain/m68k-apple-macos/RIncludes/Retro68APPL.r -I/home/camh/Retro68-build/toolchain/m68k-apple-macos/RIncludes --copy TESample.code.bin -o TESample.bin -t APPL -c ???? --cc TESample.dsk --cc TESample.APPL --cc %TESample.ad /home/camh/Documents/Retro68kApps/TESample/build/TESample.r.rsrc.bin
 
 TESample.APPL: TESample.bin
 	@$(CMAKE_COMMAND) -E touch_nocreate TESample.APPL
@@ -74,8 +74,8 @@ TESample.ad: TESample.bin
 	@$(CMAKE_COMMAND) -E touch_nocreate %TESample.ad
 
 TESample.r.rsrc.bin: ../TESample.r
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/programmer/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating TESample.r.rsrc.bin"
-	/home/programmer/Retro68-build/toolchain/bin/Rez /home/programmer/TESample/TESample.r -I/home/programmer/Retro68-build/toolchain/m68k-apple-macos/RIncludes -o TESample.r.rsrc.bin
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating TESample.r.rsrc.bin"
+	/home/camh/Retro68-build/toolchain/bin/Rez /home/camh/Documents/Retro68kApps/TESample/TESample.r -I /home/camh/Retro68-build/toolchain/m68k-apple-macos/RIncludes -o TESample.r.rsrc.bin
 
 TESample_APPL: CMakeFiles/TESample_APPL
 TESample_APPL: TESample.bin
@@ -98,6 +98,6 @@ CMakeFiles/TESample_APPL.dir/clean:
 .PHONY : CMakeFiles/TESample_APPL.dir/clean
 
 CMakeFiles/TESample_APPL.dir/depend:
-	cd /home/programmer/TESample/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/programmer/TESample /home/programmer/TESample /home/programmer/TESample/build /home/programmer/TESample/build /home/programmer/TESample/build/CMakeFiles/TESample_APPL.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/camh/Documents/Retro68kApps/TESample/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/camh/Documents/Retro68kApps/TESample /home/camh/Documents/Retro68kApps/TESample /home/camh/Documents/Retro68kApps/TESample/build /home/camh/Documents/Retro68kApps/TESample/build /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles/TESample_APPL.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/TESample_APPL.dir/depend
 

@@ -1,4 +1,4 @@
-set(CMAKE_C_COMPILER "/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc")
+set(CMAKE_C_COMPILER "/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc")
 set(CMAKE_C_COMPILER_ARG1 "")
 set(CMAKE_C_COMPILER_ID "GNU")
 set(CMAKE_C_COMPILER_VERSION "9.1.0")
@@ -17,11 +17,11 @@ set(CMAKE_C_SIMULATE_VERSION "")
 
 
 
-set(CMAKE_AR "/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-ar")
-set(CMAKE_C_COMPILER_AR "/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc-ar")
-set(CMAKE_RANLIB "/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-ranlib")
-set(CMAKE_C_COMPILER_RANLIB "/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc-ranlib")
-set(CMAKE_LINKER "/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-ld")
+set(CMAKE_AR "/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-ar")
+set(CMAKE_C_COMPILER_AR "/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc-ar")
+set(CMAKE_RANLIB "/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-ranlib")
+set(CMAKE_C_COMPILER_RANLIB "/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc-ranlib")
+set(CMAKE_LINKER "/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-ld")
 set(CMAKE_MT "")
 set(CMAKE_COMPILER_IS_GNUCC 1)
 set(CMAKE_C_COMPILER_LOADED 1)
@@ -70,7 +70,7 @@ endif()
 
 
 
-set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/home/programmer/Retro68-build/toolchain/lib/gcc/m68k-apple-macos/9.1.0/include;/home/programmer/Retro68-build/toolchain/lib/gcc/m68k-apple-macos/9.1.0/include-fixed;/home/programmer/Retro68-build/toolchain/m68k-apple-macos/include")
+set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/home/camh/Retro68-build/toolchain/lib/gcc/m68k-apple-macos/9.1.0/include;/home/camh/Retro68-build/toolchain/lib/gcc/m68k-apple-macos/9.1.0/include-fixed;/home/camh/Retro68-build/toolchain/m68k-apple-macos/include")
 set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "gcc;c;retrocrt;Interface")
-set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/home/programmer/Retro68-build/toolchain/lib/gcc/m68k-apple-macos/9.1.0;/home/programmer/Retro68-build/toolchain/m68k-apple-macos/lib")
+set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/home/camh/Retro68-build/toolchain/lib/gcc/m68k-apple-macos/9.1.0;/home/camh/Retro68-build/toolchain/m68k-apple-macos/lib")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")

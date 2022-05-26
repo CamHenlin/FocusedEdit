@@ -1058,6 +1058,45 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
     return;
 }
 
+void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
+
+    #ifdef DEBUG_FUNCTION_CALLS
+
+        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: callVoidFunctionOnCoprocessorAsync");
+    #endif
+    
+    #ifdef DEBUGGING
+
+        writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync\n");
+    #endif
+
+    const char* functionTemplate = "%s&&&%s";
+
+    // over-allocate by 1kb for the operand (which could be whatever a programmer sends to this function) + message template wrapper
+    // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
+    char functionCallMessage[strlen(parameters) + 1024];
+
+    // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
+    sprintf(functionCallMessage, functionTemplate, functionName, parameters);
+
+    #ifdef DEBUGGING
+        writeSerialPortDebug(boutRefNum, functionCallMessage);
+    #endif
+
+    void writeToCoprocessorAsyncCallback() {
+
+        writeSerialPortDebug(boutRefNum, "VOID writeToCoprocessorAsyncCallback");
+    }
+
+    // void writeToCoprocessorAsync(char* operation, char* operand, void (*callback)()) {
+
+    asyncCallback = &writeToCoprocessorAsyncCallback;
+
+    writeToCoprocessorAsync("VFUNCTION", functionCallMessage);
+
+    return;
+}
+
 
 void callEvalOnCoprocessor(char* toEval, char* output) {
 

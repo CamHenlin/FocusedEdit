@@ -6,6 +6,8 @@ void callFunctionOnCoprocessor(char* functionName, char* parameters, char* outpu
 
 void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* output, void (*callback)());
 
+void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters);
+
 void callEvalOnCoprocessor(char* toEval, char* output);
 
 void wait(float whatever);

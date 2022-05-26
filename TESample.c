@@ -356,42 +356,9 @@ Boolean TrapAvailable(short tNumber, TrapType tType)
 } /*TrapAvailable*/
 
 
-
-
-/* A reference to our assembly language routine that gets attached to the clickLoop
-field of our TE record. */
-
-// void AsmClickLoop()
-// {
-// 	asm {			
-// 			MOVEM.L		D1-D2/A1,-(SP)		; D0 and A0 need not be saved
-// 			CLR.L		-(SP)				; make space for procedure pointer
-// 			JSR			GetOldClickLoop		; get the old clickLoop
-// 			MOVEA.L		(SP)+,A0			; into A0
-// 			MOVEM.L		(SP)+,D1-D2/A1		; restore the world as it was
-			
-// 			JSR			(A0)				; and execute old clickLoop
-
-// 			MOVEM.L		D1-D2/A1,-(SP)		; D0 and A0 need not be saved
-// 			JSR			PascalClickLoop		; do our clickLoop
-// 			MOVEM.L		(SP)+,D1-D2/A1		; restore the world as it was
-// 			MOVEQ		#1,D0				; clear the zero flag so TextEdit keeps going
-// 			RTS
-// 	}
-// }
-
-
-// TEClickLoopUPP gClickLoopUPP = NewTEClickLoopProc(AsmClickLoop);
-
 int main()
 {
 	writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: main");
-	/* 1.01 - call to ForceEnvirons removed */
-	
-	/*	If you have stack requirements that differ from the default,
-		then you could use SetApplLimit to increase StackSpace at 
-		this point, before calling MaxApplZone. */
-	// MaxApplZone();					/* expand the heap so code segments load at the top */
 
 	Initialize();					/* initialize the program */
 	UnloadSeg((Ptr) Initialize);	/* note that Initialize must not be in Main! */
@@ -401,18 +368,25 @@ int main()
 	writeSerialPortDebug(boutRefNum, "initializing focusededit");
 
 	setupCoprocessor("focusededit", "modem"); // could also be "printer", modem is 0 in PCE settings - printer would be 1
-    // we could build a nuklear window for selection
 
     char programResult[MAX_RECEIVE_SIZE];
 	jsFunctionResponse = (char *)malloc(MAX_RECEIVE_SIZE);
     
-	writeSerialPortDebug(boutRefNum, (char *)OUTPUT_JS);
+	// writeSerialPortDebug(boutRefNum, (char *)OUTPUT_JS);
 	sendProgramToCoprocessor((char *)OUTPUT_JS, programResult);
 	SysBeep(1);
 
 	EventLoop();					/* call the main event loop */
 }
 
+char nextTextBuffer[MAX_RECEIVE_SIZE];
+
+void pullText() {
+
+	// callFunctionOnCoprocessor("getBuffer", "", nextTextBuffer)
+	// TODO
+	// TESetText(nextTextBuffer, )
+}
 
 /* Get events forever, and handle them by calling DoEvent.
    Also call AdjustCursor each time through the loop. */
@@ -421,6 +395,7 @@ void EventLoop()
 {
 	writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: EventLoop");
 
+	int lastPulledText = 0;
 	RgnHandle	cursorRgn;
 	Boolean		gotEvent;
 	EventRecord	event;
@@ -428,6 +403,14 @@ void EventLoop()
 
 	cursorRgn = NewRgn();			/* we�ll pass WNE an empty region the 1st time thru */
 	do {
+
+		if (TickCount() - lastPulledText > 300) {
+
+            lastPulledText = TickCount();
+
+            pullText();
+        } 
+
 		/* use WNE if it is available */
 		if ( gHasWaitNextEvent ) {
 			GetGlobalMouse(&mouse);
@@ -846,8 +829,9 @@ void DoKeyDown(EventRecord *event)
 			AdjustScrollbars(window, false);
 			AdjustTE(window);
 
-			callFunctionOnCoprocessorAsync("sendKeyDown", &key, jsFunctionResponse, emptyCallback);
-			// callFunctionOnCoprocessor("sendKeyDown", &key, jsFunctionResponse);
+			char output[32];
+			sprintf(output, "%s&&&%d", &key, (*te)->selStart);
+			callVoidFunctionOnCoprocessorAsync("insertStringToBuffer", output);
 		} else
 			AlertUser(eExceedChar);
 	}

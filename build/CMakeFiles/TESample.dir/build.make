@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/programmer/TESample
+CMAKE_SOURCE_DIR = /home/camh/Documents/Retro68kApps/TESample
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/programmer/TESample/build
+CMAKE_BINARY_DIR = /home/camh/Documents/Retro68kApps/TESample/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/TESample.dir/depend.make
@@ -59,42 +59,42 @@ include CMakeFiles/TESample.dir/flags.make
 
 CMakeFiles/TESample.dir/SerialHelper.c.obj: CMakeFiles/TESample.dir/flags.make
 CMakeFiles/TESample.dir/SerialHelper.c.obj: ../SerialHelper.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/programmer/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/TESample.dir/SerialHelper.c.obj"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/TESample.dir/SerialHelper.c.obj   -c /home/programmer/TESample/SerialHelper.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/TESample.dir/SerialHelper.c.obj"
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/TESample.dir/SerialHelper.c.obj   -c /home/camh/Documents/Retro68kApps/TESample/SerialHelper.c
 
 CMakeFiles/TESample.dir/SerialHelper.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TESample.dir/SerialHelper.c.i"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/programmer/TESample/SerialHelper.c > CMakeFiles/TESample.dir/SerialHelper.c.i
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/camh/Documents/Retro68kApps/TESample/SerialHelper.c > CMakeFiles/TESample.dir/SerialHelper.c.i
 
 CMakeFiles/TESample.dir/SerialHelper.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TESample.dir/SerialHelper.c.s"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/programmer/TESample/SerialHelper.c -o CMakeFiles/TESample.dir/SerialHelper.c.s
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/camh/Documents/Retro68kApps/TESample/SerialHelper.c -o CMakeFiles/TESample.dir/SerialHelper.c.s
 
 CMakeFiles/TESample.dir/coprocessorjs.c.obj: CMakeFiles/TESample.dir/flags.make
 CMakeFiles/TESample.dir/coprocessorjs.c.obj: ../coprocessorjs.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/programmer/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/TESample.dir/coprocessorjs.c.obj"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/TESample.dir/coprocessorjs.c.obj   -c /home/programmer/TESample/coprocessorjs.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/TESample.dir/coprocessorjs.c.obj"
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/TESample.dir/coprocessorjs.c.obj   -c /home/camh/Documents/Retro68kApps/TESample/coprocessorjs.c
 
 CMakeFiles/TESample.dir/coprocessorjs.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TESample.dir/coprocessorjs.c.i"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/programmer/TESample/coprocessorjs.c > CMakeFiles/TESample.dir/coprocessorjs.c.i
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/camh/Documents/Retro68kApps/TESample/coprocessorjs.c > CMakeFiles/TESample.dir/coprocessorjs.c.i
 
 CMakeFiles/TESample.dir/coprocessorjs.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TESample.dir/coprocessorjs.c.s"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/programmer/TESample/coprocessorjs.c -o CMakeFiles/TESample.dir/coprocessorjs.c.s
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/camh/Documents/Retro68kApps/TESample/coprocessorjs.c -o CMakeFiles/TESample.dir/coprocessorjs.c.s
 
 CMakeFiles/TESample.dir/TESample.c.obj: CMakeFiles/TESample.dir/flags.make
 CMakeFiles/TESample.dir/TESample.c.obj: ../TESample.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/programmer/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/TESample.dir/TESample.c.obj"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/TESample.dir/TESample.c.obj   -c /home/programmer/TESample/TESample.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/TESample.dir/TESample.c.obj"
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/TESample.dir/TESample.c.obj   -c /home/camh/Documents/Retro68kApps/TESample/TESample.c
 
 CMakeFiles/TESample.dir/TESample.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/TESample.dir/TESample.c.i"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/programmer/TESample/TESample.c > CMakeFiles/TESample.dir/TESample.c.i
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/camh/Documents/Retro68kApps/TESample/TESample.c > CMakeFiles/TESample.dir/TESample.c.i
 
 CMakeFiles/TESample.dir/TESample.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/TESample.dir/TESample.c.s"
-	/home/programmer/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/programmer/TESample/TESample.c -o CMakeFiles/TESample.dir/TESample.c.s
+	/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/camh/Documents/Retro68kApps/TESample/TESample.c -o CMakeFiles/TESample.dir/TESample.c.s
 
 # Object files for target TESample
 TESample_OBJECTS = \
@@ -110,7 +110,7 @@ TESample.code.bin: CMakeFiles/TESample.dir/coprocessorjs.c.obj
 TESample.code.bin: CMakeFiles/TESample.dir/TESample.c.obj
 TESample.code.bin: CMakeFiles/TESample.dir/build.make
 TESample.code.bin: CMakeFiles/TESample.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/programmer/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable TESample.code.bin"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable TESample.code.bin"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TESample.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -123,6 +123,6 @@ CMakeFiles/TESample.dir/clean:
 .PHONY : CMakeFiles/TESample.dir/clean
 
 CMakeFiles/TESample.dir/depend:
-	cd /home/programmer/TESample/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/programmer/TESample /home/programmer/TESample /home/programmer/TESample/build /home/programmer/TESample/build /home/programmer/TESample/build/CMakeFiles/TESample.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/camh/Documents/Retro68kApps/TESample/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/camh/Documents/Retro68kApps/TESample /home/camh/Documents/Retro68kApps/TESample /home/camh/Documents/Retro68kApps/TESample/build /home/camh/Documents/Retro68kApps/TESample/build /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles/TESample.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/TESample.dir/depend
 

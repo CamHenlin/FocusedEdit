@@ -4,9 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/home/programmer/TESample/SerialHelper.c" "/home/programmer/TESample/build/CMakeFiles/TESample.dir/SerialHelper.c.obj"
-  "/home/programmer/TESample/TESample.c" "/home/programmer/TESample/build/CMakeFiles/TESample.dir/TESample.c.obj"
-  "/home/programmer/TESample/coprocessorjs.c" "/home/programmer/TESample/build/CMakeFiles/TESample.dir/coprocessorjs.c.obj"
+  "/home/camh/Documents/Retro68kApps/TESample/SerialHelper.c" "/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles/TESample.dir/SerialHelper.c.obj"
+  "/home/camh/Documents/Retro68kApps/TESample/TESample.c" "/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles/TESample.dir/TESample.c.obj"
+  "/home/camh/Documents/Retro68kApps/TESample/coprocessorjs.c" "/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles/TESample.dir/coprocessorjs.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

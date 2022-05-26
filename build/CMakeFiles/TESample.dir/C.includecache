@@ -6,13 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/home/programmer/TESample/SerialHelper.c
+/home/camh/Documents/Retro68kApps/TESample/SerialHelper.c
 SerialHelper.h
-/home/programmer/TESample/SerialHelper.h
+/home/camh/Documents/Retro68kApps/TESample/SerialHelper.h
 stdio.h
-/home/programmer/TESample/stdio.h
+/home/camh/Documents/Retro68kApps/TESample/stdio.h
 
-/home/programmer/TESample/SerialHelper.h
+/home/camh/Documents/Retro68kApps/TESample/SerialHelper.h
 Serial.h
 -
 Devices.h
@@ -22,7 +22,7 @@ stdio.h
 string.h
 -
 
-/home/programmer/TESample/TESample.c
+/home/camh/Documents/Retro68kApps/TESample/TESample.c
 Types.h
 -
 limits.h
@@ -66,21 +66,21 @@ DiskInit.h
 Packages.h
 -
 TESample.h
-/home/programmer/TESample/TESample.h
+/home/camh/Documents/Retro68kApps/TESample/TESample.h
 Traps.h
 -
 stdlib.h
 -
 output_js.h
-/home/programmer/TESample/output_js.h
+/home/camh/Documents/Retro68kApps/TESample/output_js.h
 SerialHelper.h
-/home/programmer/TESample/SerialHelper.h
+/home/camh/Documents/Retro68kApps/TESample/SerialHelper.h
 coprocessorjs.h
-/home/programmer/TESample/coprocessorjs.h
+/home/camh/Documents/Retro68kApps/TESample/coprocessorjs.h
 
-/home/programmer/TESample/TESample.h
+/home/camh/Documents/Retro68kApps/TESample/TESample.h
 
-/home/programmer/TESample/coprocessorjs.c
+/home/camh/Documents/Retro68kApps/TESample/coprocessorjs.c
 stdio.h
 -
 stdlib.h
@@ -92,17 +92,17 @@ math.h
 Devices.h
 -
 string.h
-/home/programmer/TESample/string.h
+/home/camh/Documents/Retro68kApps/TESample/string.h
 stdbool.h
 -
 time.h
 -
 SerialHelper.h
-/home/programmer/TESample/SerialHelper.h
+/home/camh/Documents/Retro68kApps/TESample/SerialHelper.h
 coprocessorjs.h
-/home/programmer/TESample/coprocessorjs.h
+/home/camh/Documents/Retro68kApps/TESample/coprocessorjs.h
 
-/home/programmer/TESample/coprocessorjs.h
+/home/camh/Documents/Retro68kApps/TESample/coprocessorjs.h
 
-/home/programmer/TESample/output_js.h
+/home/camh/Documents/Retro68kApps/TESample/output_js.h
 
