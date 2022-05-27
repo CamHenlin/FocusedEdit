@@ -12,8 +12,8 @@
 IOParam outgoingSerialPortReference;
 IOParam incomingSerialPortReference;
 // #define PRINT_ERRORS 1
-#define DEBUGGING 1
-#define DEBUG_FUNCTION_CALLS 1
+// #define DEBUGGING 1
+// #define DEBUG_FUNCTION_CALLS 1
 #define MAX_ATTEMPTS 10
 #define RECEIVE_WINDOW_SIZE 32767 // receive in up to 32kb chunks
 #define MAX_RECEIVE_SIZE 32767 // matching RECEIVE_WINDOW_SIZE for now
@@ -420,7 +420,9 @@ void readSerialPortAsync() {
 
     void loopTop() {
 
-        writeSerialPortDebug(boutRefNum, "readSerialPortAsync: loopTop");
+        #ifdef DEBUGGING
+            writeSerialPortDebug(boutRefNum, "readSerialPortAsync: loopTop");
+        #endif
 
         if (loopCounterAsync++ > MAX_RECIEVE_LOOP_ITERATIONS) {
 
@@ -524,20 +526,25 @@ void readSerialPortAsync() {
 
         void loopBottom() {
 
-            writeSerialPortDebug(boutRefNum, "readSerialPortAsync: loopBottom");
+            #ifdef DEBUGGING
+                writeSerialPortDebug(boutRefNum, "readSerialPortAsync: loopBottom");
 
-    // crash is here
-            writeSerialPortDebug(boutRefNum, tempOutput);
-            writeSerialPortDebug(boutRefNum, GlobalSerialInputBuffer);
+                writeSerialPortDebug(boutRefNum, tempOutput);
+                writeSerialPortDebug(boutRefNum, GlobalSerialInputBuffer);
 
-            // byteCount is the problem
-            char debugMessage[100];
-            sprintf(debugMessage, "loopBottom: byteCountAsync: %ld", byteCountAsync);
-            writeSerialPortDebug(boutRefNum, debugMessage);
+                char debugMessage[100];
+                sprintf(debugMessage, "loopBottom: byteCountAsync: %ld", byteCountAsync);
+                writeSerialPortDebug(boutRefNum, debugMessage);
+            #endif
+
             memcpy(tempOutput, GlobalSerialInputBuffer, byteCountAsync);
 
             totalByteCountAsync += byteCountAsync;
-            writeSerialPortDebug(boutRefNum, tempOutput);
+
+
+            #ifdef DEBUGGING
+                writeSerialPortDebug(boutRefNum, tempOutput);
+            #endif
 
             if (strstr(tempOutput, ";;@@&&") != NULL) {
 
@@ -1044,7 +1051,9 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
 
     void writeToCoprocessorAsyncCallback() {
 
-        writeSerialPortDebug(boutRefNum, "writeToCoprocessorAsyncCallback");
+        #ifdef DEBUGGING
+            writeSerialPortDebug(boutRefNum, "writeToCoprocessorAsyncCallback");
+        #endif
 
         readSerialPortAsync();
     }
@@ -1085,7 +1094,9 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     void writeToCoprocessorAsyncCallback() {
 
-        writeSerialPortDebug(boutRefNum, "VOID writeToCoprocessorAsyncCallback");
+        #ifdef DEBUGGING
+            writeSerialPortDebug(boutRefNum, "VOID writeToCoprocessorAsyncCallback");
+        #endif
     }
 
     // void writeToCoprocessorAsync(char* operation, char* operand, void (*callback)()) {
@@ -1119,18 +1130,24 @@ void callEvalOnCoprocessor(char* toEval, char* output) {
 
 void coprocessorEventLoopActions() {
 
-    writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: coprocessorEventLoopActions");
+    #ifdef DEBUGGING
+        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: coprocessorEventLoopActions");
+    #endif
 
     if (!asyncCallActive) {
 
-        writeSerialPortDebug(boutRefNum, "coprocessorEventLoopActions: !asyncCallActive return");
+        #ifdef DEBUGGING
+            writeSerialPortDebug(boutRefNum, "coprocessorEventLoopActions: !asyncCallActive return");
+        #endif
 
         return;
     }
 
     if (!asyncCallComplete) {
 
-        writeSerialPortDebug(boutRefNum, "coprocessorEventLoopActions: !asyncCallComplete return");
+        #ifdef DEBUGGING
+            writeSerialPortDebug(boutRefNum, "coprocessorEventLoopActions: !asyncCallComplete return");
+        #endif
 
         return;
     }
@@ -1139,6 +1156,9 @@ void coprocessorEventLoopActions() {
     asyncCallComplete = false;
     asyncCallActive = false;
 
-    writeSerialPortDebug(boutRefNum, "coprocessorEventLoopActions: calling back");
+    #ifdef DEBUGGING
+        writeSerialPortDebug(boutRefNum, "coprocessorEventLoopActions: calling back");
+    #endif
+
     asyncCallback();
 }

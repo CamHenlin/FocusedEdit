@@ -383,9 +383,21 @@ char nextTextBuffer[MAX_RECEIVE_SIZE];
 
 void pullText() {
 
-	// callFunctionOnCoprocessor("getBuffer", "", nextTextBuffer)
-	// TODO
-	// TESetText(nextTextBuffer, )
+	Rect teRect;
+	DocumentPeek doc;
+	WindowPtr window;
+	window = FrontWindow();
+	doc = (DocumentPeek) (window);
+	TEHandle te = (doc)->docTE;
+
+	GetTERect(window, &teRect);
+
+	callFunctionOnCoprocessor("getBuffer", "", nextTextBuffer);
+
+	// TODO: need to massage the text a little bit... for example, non-ASCII chars
+	// end up being mangled. at least try to fix some of them
+	TESetText(nextTextBuffer, strlen(nextTextBuffer), te);
+	TEUpdate(&teRect, te);
 }
 
 /* Get events forever, and handle them by calling DoEvent.
@@ -393,7 +405,9 @@ void pullText() {
 
 void EventLoop()
 {
-	writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: EventLoop");
+    #ifdef DEBUGGING
+		writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: EventLoop");
+	#endif
 
 	int lastPulledText = 0;
 	RgnHandle	cursorRgn;
@@ -425,6 +439,9 @@ void EventLoop()
 			/* make sure we have the right cursor before handling the event */
 			AdjustCursor(event.where, cursorRgn);
 			DoEvent(&event);
+
+			// make sure we don't try to pull text if the user is actively using the application
+			lastPulledText = TickCount();
 		}
 		else {
 			DoIdle();
@@ -448,7 +465,11 @@ void EventLoop()
 
 void DoEvent(EventRecord *event)
 {
-	writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: EventLoop");
+
+	#ifdef DEBUGGING
+		writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: EventLoop");
+	#endif
+
 	short		part;
 	// short		err;
 	WindowPtr	window;

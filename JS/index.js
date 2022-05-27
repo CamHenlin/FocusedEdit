@@ -19,7 +19,7 @@ const html = `
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
 <script>
-    const socket = io('http://localhost:3000');
+    const socket = io();
 
     const l = console.log
 
