@@ -334,7 +334,6 @@ void BigBadError(short error)
 	ExitToShell();
 }
 
-
 /*	Check to see if a given trap is implemented. This is only used by the
 	Initialize routine in this program, so we put it in the Initialize segment.
 	The recommended approach to see if a trap is implemented is to see if
@@ -391,11 +390,12 @@ void pullText() {
 	TEHandle te = (doc)->docTE;
 
 	GetTERect(window, &teRect);
+	// writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: pullText");
+	// writeSerialPortDebug(boutRefNum, nextTextBuffer);
 
 	callFunctionOnCoprocessor("getBuffer", "", nextTextBuffer);
 
-	// TODO: need to massage the text a little bit... for example, non-ASCII chars
-	// end up being mangled. at least try to fix some of them
+	EraseRect(&window->portRect);
 	TESetText(nextTextBuffer, strlen(nextTextBuffer), te);
 	TEUpdate(&teRect, te);
 }

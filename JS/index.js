@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const { text } = require('express')
 const io = new Server(server);
 const port = 3000
+const DEBUGGING = true
 
 const html = `
 <html>
@@ -42,6 +43,27 @@ const html = `
 `
 
 let textBuffer = ``
+let sanitizedForOldMachineTextBuffer = `` // here we will replace new lines with carriage returns
+
+const updateTextBuffer = () => {
+
+    sanitizedForOldMachineTextBuffer = ``
+
+    for (const character of textBuffer.split(``)) {
+
+        switch (character.charCodeAt(0)) {
+
+            case 10:
+
+                sanitizedForOldMachineTextBuffer = `${sanitizedForOldMachineTextBuffer}${String.fromCharCode(13)}`
+                break
+            default:
+
+                sanitizedForOldMachineTextBuffer = `${sanitizedForOldMachineTextBuffer}${character}`
+                break
+        }
+    }
+}
 
 io.on('connection', (socket) => {
 
@@ -54,6 +76,7 @@ io.on('connection', (socket) => {
         textBuffer = message
 
         socket.broadcast.emit('message', textBuffer)
+        updateTextBuffer()
     })
 })
 
@@ -74,21 +97,53 @@ server.listen(port, () => {
 
 const insertStringToBuffer = (string, position) => {
 
-    textBuffer = `${textBuffer.slice(0, position)}${string}${textBuffer.slice(position, textBuffer.length)}`
+    switch (string.charCodeAt(0)) {
 
-    io.emit('message', textBuffer);
+        // backspace
+        case 8:
+
+            textBuffer = `${textBuffer.slice(0, position)}${textBuffer.slice(position + 1, textBuffer.length)}`
+            break
+        // carriage return, convert to newline
+        case 13:
+
+            textBuffer = `${textBuffer.slice(0, position)}${String.fromCharCode(10)}${textBuffer.slice(position, textBuffer.length)}`
+            break
+        // arrow keys
+        case 28:
+        case 29:
+        case 30:
+        case 31:
+
+            return
+        default:
+
+            textBuffer = `${textBuffer.slice(0, position)}${string}${textBuffer.slice(position, textBuffer.length)}`
+            break
+    }
+
+    io.emit('message', textBuffer)
+    updateTextBuffer()
 }
 
 class FocusedEdit {
 
-    sendKeyDown (key) {
-
-        console.log(`key received: ${key}`)
-
-        return `ACK`
-    }
-
     insertStringToBuffer (string, position) {
+
+        if (!string || !position) {
+
+            return
+        }
+
+        if (DEBUGGING) {
+
+            console.log(`insertStringToBuffer(${string}, ${position}): ASCII:`)
+
+            for (const character of string.split()) {
+
+                console.log(character.charCodeAt(0))
+            }
+        }
 
         insertStringToBuffer(string, Number(position))
 
@@ -97,7 +152,7 @@ class FocusedEdit {
 
     getBuffer () {
 
-        return textBuffer
+        return sanitizedForOldMachineTextBuffer
     }
 }
 
