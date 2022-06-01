@@ -1,95 +1,3 @@
-/*------------------------------------------------------------------------------
-#
-#	Apple Macintosh Developer Technical Support
-#
-#	MultiFinder-Aware Simple TextEdit Sample Application
-#
-#	TESample
-#
-#	This file: TESample.c	-	C Source (main segment)
-#
-#	Copyright � 1989 Apple Computer, Inc.
-#	All rights reserved.
-#
-#	Versions:
-#				1.00				08/88
-#				1.01				11/88
-#				1.02				04/89
-#				1.03				06/89
-#				1.04				06/92
-#
-#	Components:
-#				TESample.p			June 1, 1989
-#				TESample.c			June 1, 1989
-#				TESampleInit.c		June 4, 1992
-#				TESampleGlue.a		June 1, 1989
-#				TESample.r			June 1, 1989
-#				TESample.h			June 1, 1989
-#				PTESample.make		June 1, 1989
-#				CTESample.make		June 1, 1989
-#				TCTESample.�		June 4, 1992
-#				TCTESample.�.rsrc	June 4, 1992
-#				TCTESampleGlue.c	June 4, 1992
-#
-#	TESample is an example application that demonstrates how 
-#	to initialize the commonly used toolbox managers, operate 
-#	successfully under MultiFinder, handle desk accessories and 
-#	create, grow, and zoom windows. The fundamental TextEdit 
-#	toolbox calls and TextEdit autoscroll are demonstrated. It 
-#	also shows how to create and maintain scrollbar controls.
-#
-#	It does not by any means demonstrate all the techniques you 
-#	need for a large application. In particular, Sample does not 
-#	cover exception handling, multiple windows/documents, 
-#	sophisticated memory management, printing, or undo. All of 
-#	these are vital parts of a normal full-sized application.
-#
-#	This application is an example of the form of a Macintosh 
-#	application; it is NOT a template. It is NOT intended to be 
-#	used as a foundation for the next world-class, best-selling, 
-#	600K application. A stick figure drawing of the human body may 
-#	be a good example of the form for a painting, but that does not 
-#	mean it should be used as the basis for the next Mona Lisa.
-#
-#	We recommend that you review this program or Sample before 
-#	beginning a new application. Sample is a simple app. which doesn�t 
-#	use TextEdit or the Control Manager.
-#
-------------------------------------------------------------------------------*/
-
-
-/* Segmentation strategy:
-
-   This program consists of three segments.
-   1. "Main" contains most of the code, including the MPW libraries, and the
-      main program.  This segment is in the file Sample.c
-   2. "Initialize" contains code that is only used once, during startup, and
-      can be unloaded after the program starts.  This segment is in the file
-	  SampleInit.c.
-   3. "%A5Init" is automatically created by the Linker to initialize globals
-      for the MPW libraries and is unloaded right away. */
-
-
-/* SetPort strategy:
-
-   Toolbox routines do not change the current port. In spite of this, in this
-   program we use a strategy of calling SetPort whenever we want to draw or
-   make calls which depend on the current port. This makes us less vulnerable
-   to bugs in other software which might alter the current port (such as the
-   bug (feature?) in many desk accessories which change the port on OpenDeskAcc).
-   Hopefully, this also makes the routines from this program more self-contained,
-   since they don't depend on the current port setting. */
-
-
-/* Clipboard strategy:
-
-   This program does not maintain a private scrap. Whenever a cut, copy, or paste
-   occurs, we import/export from the public scrap to TextEdit's scrap right away,
-   using the TEToScrap and TEFromScrap routines. If we did use a private scrap,
-   the import/export would be in the activate/deactivate event and suspend/resume
-   event routines. */
-
-/* A/UX is case sensitive, so use correct case for include file names */
 #include <Types.h>
 #include <limits.h>
 #include <Quickdraw.h>
@@ -370,15 +278,17 @@ int main()
 
     char programResult[MAX_RECEIVE_SIZE];
 	jsFunctionResponse = (char *)malloc(MAX_RECEIVE_SIZE);
-    
-	// writeSerialPortDebug(boutRefNum, (char *)OUTPUT_JS);
+
 	sendProgramToCoprocessor((char *)OUTPUT_JS, programResult);
 	SysBeep(1);
+
+	AdjustScrollSizes(FrontWindow());
 
 	EventLoop();					/* call the main event loop */
 }
 
 char nextTextBuffer[MAX_RECEIVE_SIZE];
+char lastTextBuffer[MAX_RECEIVE_SIZE];
 
 void pullText() {
 
@@ -390,14 +300,18 @@ void pullText() {
 	TEHandle te = (doc)->docTE;
 
 	GetTERect(window, &teRect);
-	// writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: pullText");
-	// writeSerialPortDebug(boutRefNum, nextTextBuffer);
 
 	callFunctionOnCoprocessor("getBuffer", "", nextTextBuffer);
+
+	if (strcmp(nextTextBuffer, lastTextBuffer) == 0) {
+
+		return;
+	}
 
 	EraseRect(&window->portRect);
 	TESetText(nextTextBuffer, strlen(nextTextBuffer), te);
 	TEUpdate(&teRect, te);
+	strcpy(lastTextBuffer, nextTextBuffer);
 }
 
 /* Get events forever, and handle them by calling DoEvent.
@@ -446,9 +360,7 @@ void EventLoop()
 		else {
 			DoIdle();
 			coprocessorEventLoopActions();
-			
-			// TODO:
-			// Make async coprocesor request for updates from the host machine
+
 
 							/* perform idle tasks when it�s not our event */
 		/*	If you are using modeless dialogs that have editText items,

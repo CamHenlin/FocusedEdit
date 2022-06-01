@@ -1,64 +1,4 @@
-/*------------------------------------------------------------------------------
-#
-#	Apple Macintosh Developer Technical Support
-#
-#	MultiFinder-Aware TextEdit Sample Application
-#
-#	TESample
-#
-#	TESample.r	-	Rez Source
-#
-#	Copyright � 1989 Apple Computer, Inc.
-#	All rights reserved.
-#
-#	Versions:
-#				1.00				08/88
-#				1.01				11/88
-#				1.02				04/89
-#				1.03				06/89
-#				1.04				06/92
-#
-#	Components:
-#				TESample.p			June 1, 1989
-#				TESample.c			June 1, 1989
-#				TESampleInit.c		June 4, 1992
-#				TESampleGlue.a		June 1, 1989
-#				TESample.r			June 1, 1989
-#				TESample.h			June 1, 1989
-#				PTESample.make		June 1, 1989
-#				CTESample.make		June 1, 1989
-#				TCTESample.�		June 4, 1992
-#				TCTESample.�.rsrc	June 4, 1992
-#				TCTESampleGlue.c	June 4, 1992
-#
-#	TESample is an example application that demonstrates how 
-#	to initialize the commonly used toolbox managers, operate 
-#	successfully under MultiFinder, handle desk accessories and 
-#	create, grow, and zoom windows. The fundamental TextEdit 
-#	toolbox calls and TextEdit autoscroll are demonstrated. It 
-#	also shows how to create and maintain scrollbar controls.
-#
-#	It does not by any means demonstrate all the techniques you 
-#	need for a large application. In particular, Sample does not 
-#	cover exception handling, multiple windows/documents, 
-#	sophisticated memory management, printing, or undo. All of 
-#	these are vital parts of a normal full-sized application.
-#
-#	This application is an example of the form of a Macintosh 
-#	application; it is NOT a template. It is NOT intended to be 
-#	used as a foundation for the next world-class, best-selling, 
-#	600K application. A stick figure drawing of the human body may 
-#	be a good example of the form for a painting, but that does not 
-#	mean it should be used as the basis for the next Mona Lisa.
-#
-#	We recommend that you review this program or Sample before 
-#	beginning a new application. Sample is a simple app. which doesn�t 
-#	use TextEdit or the Control Manager.
-#
-------------------------------------------------------------------------------*/
-
 #include "Types.r"
-
 #include "TESample.h"
 
 /* we use an MBAR resource to conveniently load all the menus */
@@ -73,7 +13,7 @@ resource 'MENU' (mApple, preload) {
 	0b1111111111111111111111111111101,	/* disable dashed line, enable About and DAs */
 	enabled, apple,
 	{
-		"About TESample\311",
+		"About FocusedEdit\311",
 			noicon, nokey, nomark, plain;
 		"-",
 			noicon, nokey, nomark, plain
@@ -163,13 +103,13 @@ resource 'DITL' (rAboutAlert, purgeable) {
 		{8, 8, 24, 274},
 		StaticText {
 			disabled,
-			"MultiFinder-Aware TextEdit Application"
+			"FocusedEdit"
 		},
 		/* [3] */
 		{32, 8, 48, 237},
 		StaticText {
 			disabled,
-			"Copyright \251 1989 Apple Computer"
+			""
 		},
 		/* [4] */
 		{56, 8, 72, 136},
@@ -181,7 +121,7 @@ resource 'DITL' (rAboutAlert, purgeable) {
 		{80, 24, 112, 167},
 		StaticText {
 			disabled,
-			"Macintosh Developer �Technical Support"
+			"Cameron Henlin"
 		}
 	}
 };
@@ -190,7 +130,7 @@ resource 'DITL' (rAboutAlert, purgeable) {
 /* this ALRT and DITL are used as an error screen */
 
 resource 'ALRT' (rAboutAlert, purgeable) {
-	{40, 20, 160, 290},
+	{40, 20, 194, 412},
 	rUserAlert,
 	{ /* array: 4 elements */
 		/* [1] */
@@ -206,44 +146,59 @@ resource 'ALRT' (rAboutAlert, purgeable) {
 };
 
 resource 'DITL' (rUserAlert, purgeable) {
-	{ /* array DITLarray: 3 elements */
+	{ /* array DITLarray: 5 elements */
 		/* [1] */
-		{80, 150, 100, 230},
+		{119, 8, 138, 80},
 		Button {
 			enabled,
 			"OK"
 		},
 		/* [2] */
-		{10, 60, 60, 230},
+		{8, 8, 24, 264},
 		StaticText {
 			disabled,
-			"Error. ^0."
+			"FocusedEdit"
 		},
 		/* [3] */
-		{8, 8, 40, 40},
-		Icon {
+		{32, 8, 48, 267},
+		StaticText {
 			disabled,
-			2
+			"Copyright © 2022 Cameron Henlin"
+		},
+		/* [4] */
+		{56, 8, 72, 166},
+		StaticText {
+			disabled,
+			"cam.henlin@gmail.com"
+		},
+		/* [5] */
+		{80, 8, 112, 407},
+		StaticText {
+			disabled,
+			"https://github.com/CamHenlin/FocusedEdit"
 		}
 	}
 };
 
+/*
+# {64, 60, 314, 460},
+*/
 
 resource 'WIND' (rDocWindow, preload, purgeable) {
-	{64, 60, 314, 460},
-	zoomDocProc, invisible, goAway, 0x0, "untitled",
+	{42, 4, 336, 506}, 
+	zoomDocProc, invisible, goAway, 0x0, "FocusedEdit",
 	centerMainScreen
 };
 
 
 resource 'CNTL' (rVScroll, preload, purgeable) {
-	{-1, 385, 236, 401},
+	{0, 0, 0, 0},
 	0, visible, 0, 0, scrollBarProc, 0, ""
 };
 
 
 resource 'CNTL' (rHScroll, preload, purgeable) {
-	{235, -1, 251, 386},
+	{0, 0, 0, 0},
 	0, visible, 0, 0, scrollBarProc, 0, ""
 };
 
@@ -292,7 +247,7 @@ type 'MOOT' as 'STR ';
 
 
 resource 'MOOT' (0) {
-	"MultiFinder-Aware TextEdit Sample Application"
+	"FocusedEdit"
 };
 
 
@@ -322,23 +277,23 @@ resource 'FREF' (128) {
 resource 'ICN#' (128) {
 	{ /* array: 2 elements */
 		/* [1] */
-		$"04 30 40 00 0A 50 A0 00 0B 91 10 02 08 22 08 03"
-		$"12 24 04 05 20 28 02 09 40 10 01 11 80 0C 00 A1"
-		$"80 03 FF C2 7E 00 FF 04 01 00 7F 04 03 00 1E 08"
-		$"04 E0 00 0C 08 E0 00 0A 10 E0 00 09 08 C0 00 06"
-		$"04 87 FE 04 02 88 01 04 01 88 00 84 00 88 00 44"
-		$"00 88 00 44 00 88 00 C4 01 10 01 88 02 28 03 10"
-		$"01 C4 04 E0 00 02 08 00 73 BF FB EE 4C A2 8A 2A"
-		$"40 AA AA EA 52 AA AA 24 5E A2 8A EA 73 BE FB 8E",
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF",
 		/* [2] */
-		$"04 30 40 00 0E 70 E0 00 0F F1 F0 02 0F E3 F8 03"
-		$"1F E7 FC 07 3F EF FE 0F 7F FF FF 1F FF FF FF BF"
-		$"FF FF FF FE 7F FF FF FC 01 FF FF FC 03 FF FF F8"
-		$"07 FF FF FC 0F FF FF FE 1F FF FF FF 0F FF FF FE"
-		$"07 FF FF FC 03 FF FF FC 01 FF FF FC 00 FF FF FC"
-		$"00 FF FF FC 00 FF FF FC 01 FF FF F8 03 EF FF F0"
-		$"01 C7 FC E0 00 03 F8 00 73 BF FB EE 7F BE FB EE"
-		$"7F BE FB EE 7F BE FB E4 7F BE FB EE 73 BE FB 8E"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
+		$"FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF"
 	}
 };
 
