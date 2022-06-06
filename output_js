@@ -43,6 +43,7 @@ const html = `
 </html>
 `
 
+let coprocessorCallIndex = 0
 let textBuffer = ``
 let sanitizedForOldMachineTextBuffer = `` // here we will replace new lines with carriage returns
 
@@ -115,6 +116,10 @@ const insertStringToBuffer = (string, position) => {
         case 29:
         case 30:
         case 31:
+        // esc, clear
+        case 27:
+        // unicode fallback character
+        case 65533:
 
             return
         default:
@@ -129,7 +134,7 @@ const insertStringToBuffer = (string, position) => {
 
 class FocusedEdit {
 
-    insertStringToBuffer (string, position) {
+    insertStringToBuffer (string, position, callIndex) {
 
         if (!string || !position) {
 
@@ -138,13 +143,25 @@ class FocusedEdit {
 
         if (DEBUGGING) {
 
-            console.log(`insertStringToBuffer(${string}, ${position}): ASCII:`)
+            console.log(`insertStringToBuffer(${string}, ${position}, ${callIndex}): ASCII:`)
 
-            for (const character of string.split()) {
+            for (const character of string.split(``)) {
 
                 console.log(character.charCodeAt(0))
             }
         }
+
+        // we have to track the call index because sometimes the serial port can be slow,
+        // and calls will come in out of order. If we're not ready for the call, rerun it in 50ms
+        if (Number(callIndex) !== coprocessorCallIndex) {
+
+            return setTimeout(() => {
+
+                this.insertStringToBuffer(string, position, callIndex)
+            }, 50)
+        }
+
+        coprocessorCallIndex++
 
         insertStringToBuffer(string, Number(position))
 

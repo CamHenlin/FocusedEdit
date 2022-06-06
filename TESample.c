@@ -280,6 +280,8 @@ int main()
 	jsFunctionResponse = (char *)malloc(MAX_RECEIVE_SIZE);
 
 	sendProgramToCoprocessor((char *)OUTPUT_JS, programResult);
+
+	writeSerialPortDebug(boutRefNum, "program sent to coprocessor!");
 	SysBeep(1);
 
 	AdjustScrollSizes(FrontWindow());
@@ -741,7 +743,9 @@ void DoContentClick(WindowPtr window, EventRecord *event)
 	writeSerialPortDebug(boutRefNum, "emptyCallback\n");
 	writeSerialPortDebug(boutRefNum, output);
 	SetCursor(*GetCursor(plusCursor));
- }
+}
+
+long int callIndex = 0L;
 
 void DoKeyDown(EventRecord *event)
 {
@@ -750,23 +754,29 @@ void DoKeyDown(EventRecord *event)
 	TEHandle	te;
 
 	window = FrontWindow();
-	if ( IsAppWindow(window) ) {
+
+	if (IsAppWindow(window)) {
+
 		te = ((DocumentPeek) window)->docTE;
 		key = event->message & charCodeMask;
 		/* we have a char. for our window; see if we are still below TextEdit�s
 			limit for the number of characters (but deletes are always rad) */
-		if ( key == kDelChar ||
-				(*te)->teLength - ((*te)->selEnd - (*te)->selStart) + 1 <
-				kMaxTELength ) {
+		if (key == kDelChar || (*te)->teLength - ((*te)->selEnd - (*te)->selStart) + 1 < kMaxTELength) {
+
 			TEKey(key, te);
 			AdjustScrollbars(window, false);
 			AdjustTE(window);
 
 			char output[32];
-			sprintf(output, "%s&&&%d", &key, (*te)->selStart);
+			sprintf(output, "%s&&&%d&&&%ld", &key, (*te)->selStart, callIndex++);
 			callVoidFunctionOnCoprocessorAsync("insertStringToBuffer", output);
-		} else
-			AlertUser(eExceedChar);
+
+			return;
+		}
+
+		AlertUser(eExceedChar);
+
+		return;
 	}
 } /*DoKeyDown*/
 
