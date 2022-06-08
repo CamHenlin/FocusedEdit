@@ -97,20 +97,27 @@ server.listen(port, () => {
     console.log(`listening on *:${port}`);
 });
 
-const insertStringToBuffer = (string, position) => {
+const insertStringToBuffer = (string, startPosition, endPosition) => {
 
     switch (string.charCodeAt(0)) {
 
         // backspace
         case 8:
 
-            textBuffer = `${textBuffer.slice(0, position)}${textBuffer.slice(position + 1, textBuffer.length)}`
+            if (startPosition === endPosition) {
+
+                endPosition = endPosition + 1
+            }
+
+            textBuffer = `${textBuffer.slice(0, startPosition)}${textBuffer.slice(endPosition, textBuffer.length)}`
             break
         // carriage return, convert to newline
         case 13:
 
-            textBuffer = `${textBuffer.slice(0, position)}${String.fromCharCode(10)}${textBuffer.slice(position, textBuffer.length)}`
+            textBuffer = `${textBuffer.slice(0, startPosition)}${String.fromCharCode(10)}${textBuffer.slice(endPosition, textBuffer.length)}`
             break
+        // end of transmission character
+        case 4:
         // arrow keys
         case 28:
         case 29:
@@ -124,7 +131,7 @@ const insertStringToBuffer = (string, position) => {
             return
         default:
 
-            textBuffer = `${textBuffer.slice(0, position)}${string}${textBuffer.slice(position, textBuffer.length)}`
+            textBuffer = `${textBuffer.slice(0, startPosition)}${string}${textBuffer.slice(endPosition, textBuffer.length)}`
             break
     }
 
@@ -134,16 +141,16 @@ const insertStringToBuffer = (string, position) => {
 
 class FocusedEdit {
 
-    insertStringToBuffer (string, position, callIndex) {
+    insertStringToBuffer (string, startPosition, endPosition, callIndex) {
 
-        if (!string || !position) {
+        if (!string || !startPosition || !endPosition || !callIndex) {
 
             return
         }
 
         if (DEBUGGING) {
 
-            console.log(`insertStringToBuffer(${string}, ${position}, ${callIndex}): ASCII:`)
+            console.log(`insertStringToBuffer(${string}, ${startPosition}, ${endPosition}, ${callIndex}): ASCII:`)
 
             for (const character of string.split(``)) {
 
@@ -157,13 +164,13 @@ class FocusedEdit {
 
             return setTimeout(() => {
 
-                this.insertStringToBuffer(string, position, callIndex)
+                this.insertStringToBuffer(string, startPosition, endPosition, callIndex)
             }, 50)
         }
 
         coprocessorCallIndex++
 
-        insertStringToBuffer(string, Number(position))
+        insertStringToBuffer(string, Number(startPosition), Number(endPosition))
 
         return
     }

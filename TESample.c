@@ -70,8 +70,10 @@ Boolean IsDAWindow( WindowPtr window );
 Boolean TrapAvailable( short tNumber, TrapType tType );
 
 
-
- char *jsFunctionResponse;
+long int callIndex = 0L;
+int globalSelStart = 0;
+int globalSelEnd = 0;
+char *jsFunctionResponse;
 
 /* The "g" prefix is used to emphasize that a variable is global. */
 
@@ -686,6 +688,7 @@ void DoContentClick(WindowPtr window, EventRecord *event)
 	Boolean		shiftDown;
 	DocumentPeek doc;
 	Rect		teRect;
+	TEHandle	te;
 
 	if ( IsAppWindow(window) ) {
 		SetPort(window);
@@ -698,6 +701,11 @@ void DoContentClick(WindowPtr window, EventRecord *event)
 			/* see if we need to extend the selection */
 			shiftDown = (event->modifiers & shiftKey) != 0;	/* extend if Shift is down */
 			TEClick(mouse, shiftDown, doc->docTE);
+			
+			te = ((DocumentPeek) window)->docTE;
+
+			globalSelStart = (*te)->selStart;
+			globalSelEnd = (*te)->selEnd;
 		} else {
 			part = FindControl(mouse, window, &control);
 			switch ( part ) {
@@ -745,7 +753,6 @@ void DoContentClick(WindowPtr window, EventRecord *event)
 	SetCursor(*GetCursor(plusCursor));
 }
 
-long int callIndex = 0L;
 
 void DoKeyDown(EventRecord *event)
 {
@@ -768,7 +775,10 @@ void DoKeyDown(EventRecord *event)
 			AdjustTE(window);
 
 			char output[32];
-			sprintf(output, "%s&&&%d&&&%ld", &key, (*te)->selStart, callIndex++);
+			sprintf(output, "%s&&&%d&&&%d&&&%ld", &key, globalSelStart, globalSelEnd, callIndex++);
+			globalSelStart = (*te)->selStart;
+			globalSelEnd = (*te)->selEnd;
+			writeSerialPortDebug(boutRefNum, output);
 			callVoidFunctionOnCoprocessorAsync("insertStringToBuffer", output);
 
 			return;
