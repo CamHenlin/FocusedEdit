@@ -8,21 +8,25 @@ const { Server } = require("socket.io");
 const { text } = require('express')
 const io = new Server(server);
 const port = 3000
-const DEBUGGING = true
+const DEBUGGING = false
 
 const html = `
 <html>
 <title>FocusedEdit</title>
-<body>
-    <div>
-        <textarea rows="30" cols="50" id="editor"></textarea>
+<body style="width: 100%;">
+    <div style="width: 100%; align: center;">
+        <h1>
+            FocusedEdit
+        </h1>
+        <h5>
+            <a href="https://github.com/CamHenlin/FocusedEdit" target="_new">help</a>
+        </h5>
+        <textarea style="display: block; margin-left: auto; margin-right: auto; border: 2px black solid; padding: 8px;" placeholder="enter text to begin" rows="30" cols="50" id="editor"></textarea>
     </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
 <script>
     const socket = io();
-
-    const l = console.log
 
     function getEl(id) {
         return document.getElementById(id)
@@ -72,8 +76,12 @@ io.on('connection', (socket) => {
 
     socket.on('message', (message) => {
 
-        log(`event:`)
-        log(message)
+        if (DEBUGGING) {
+
+            log(`event:`)
+            log(message)
+        }
+
         textBuffer = message
 
         socket.broadcast.emit('message', textBuffer)
