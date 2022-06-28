@@ -8,12 +8,12 @@ const { Server } = require("socket.io");
 const { text } = require('express')
 const io = new Server(server);
 const port = 3000
-const DEBUGGING = false
+const DEBUGGING = true
 
 const html = `
 <html>
 <title>FocusedEdit</title>
-<body style="width: 100%;">
+<body style="background-color: #ffffff;opacity: 1;background-image: repeating-linear-gradient(45deg, #000000 25%, transparent 25%, transparent 75%, #000000 75%, #000000), repeating-linear-gradient(45deg, #000000 25%, #ffffff 25%, #ffffff 75%, #000000 75%, #000000);background-position: 0 0, 1px 1px;background-size: 2px 2px;">
     <div style="width: 100%; align: center;">
         <h1>
             FocusedEdit
@@ -157,13 +157,10 @@ class FocusedEdit {
 
         if (DEBUGGING) {
 
-            console.log(`insertStringToBuffer(${string}, ${startPosition}, ${endPosition}, ${callIndex}): ASCII:`)
-
-            for (const character of string.split(``)) {
-
-                console.log(character.charCodeAt(0))
-            }
+            console.log(`insertStringToBuffer(${string}, ${startPosition}, ${endPosition}, ${callIndex}): ASCII: ${String.fromCharCode(string)}`)
         }
+
+        string = String.fromCharCode(string)
 
         // we have to track the call index because sometimes the serial port can be slow,
         // and calls will come in out of order. If we're not ready for the call, rerun it in 50ms

@@ -768,23 +768,36 @@ void DoKeyDown(EventRecord *event)
 		key = event->message & charCodeMask;
 		/* we have a char. for our window; see if we are still below TextEdit�s
 			limit for the number of characters (but deletes are always rad) */
-		if (key == kDelChar || (*te)->teLength - ((*te)->selEnd - (*te)->selStart) + 1 < kMaxTELength) {
+		if (key != kDelChar && (*te)->teLength - ((*te)->selEnd - (*te)->selStart) + 1 > kMaxTELength) {
 
-			TEKey(key, te);
-			AdjustScrollbars(window, false);
-			AdjustTE(window);
+			AlertUser(eExceedChar);
+			return;
+		}
 
-			char output[32];
-			sprintf(output, "%s&&&%d&&&%d&&&%ld", &key, globalSelStart, globalSelEnd, callIndex++);
-			globalSelStart = (*te)->selStart;
-			globalSelEnd = (*te)->selEnd;
-			writeSerialPortDebug(boutRefNum, output);
-			callVoidFunctionOnCoprocessorAsync("insertStringToBuffer", output);
+		if ((key < 28 || key > 127) && key != 8 && key != 13) {
 
 			return;
 		}
 
-		AlertUser(eExceedChar);
+		TEKey(key, te);
+		AdjustScrollbars(window, false);
+		AdjustTE(window);
+
+		char output[32];
+		sprintf(output, "%d&&&%d&&&%d&&&%ld", key, globalSelStart, globalSelEnd, callIndex++);
+
+		// handle updating the global selection tracker to the selection AFTER the key is pressed
+		// otherwise our selStart/selEnd will always just be a single point
+		globalSelStart = (*te)->selStart;
+		globalSelEnd = (*te)->selEnd;
+
+		#ifdef DEBUGGING
+			char debugOutput[255];
+			sprintf(debugOutput, "output to serial port %s, char code for input was %d", output, key);
+			writeSerialPortDebug(boutRefNum, debugOutput);
+		#endif
+
+		callVoidFunctionOnCoprocessorAsync("insertStringToBuffer", output);
 
 		return;
 	}
