@@ -8,7 +8,7 @@ const { Server } = require("socket.io");
 const { text } = require('express')
 const io = new Server(server);
 const port = 3000
-const DEBUGGING = true
+const DEBUGGING = false
 
 const html = `
 <html>
@@ -113,7 +113,7 @@ const insertStringToBuffer = (string, startPosition, endPosition) => {
 
             if (startPosition === endPosition) {
 
-                endPosition = endPosition + 1
+                startPosition--
             }
 
             textBuffer = `${textBuffer.slice(0, startPosition)}${textBuffer.slice(endPosition, textBuffer.length)}`
