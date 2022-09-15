@@ -47,6 +47,10 @@ resource 'MENU' (mFile, preload) {
 			noicon, nokey, nomark, plain;
 		"-",
 			noicon, nokey, nomark, plain;
+		"Get IP Addresses For Host",
+			noicon, nokey, nomark, plain;
+		"-",
+			noicon, nokey, nomark, plain;
 		"Quit",
 			noicon, "Q", nomark, plain
 	}
@@ -75,62 +79,8 @@ resource 'MENU' (mEdit, preload) {
 
 /* this ALRT and DITL are used as an About screen */
 
-resource 'ALRT' (rAboutAlert, purgeable) {
-	{40, 20, 160, 290},
-	rAboutAlert,
-	{ /* array: 4 elements */
-		/* [1] */
-		OK, visible, silent,
-		/* [2] */
-		OK, visible, silent,
-		/* [3] */
-		OK, visible, silent,
-		/* [4] */
-		OK, visible, silent
-	},
-    centerMainScreen       // Where to show the alert
-};
-
-resource 'DITL' (rAboutAlert, purgeable) {
-	{ /* array DITLarray: 5 elements */
-		/* [1] */
-		{88, 184, 108, 264},
-		Button {
-			enabled,
-			"OK"
-		},
-		/* [2] */
-		{8, 8, 24, 274},
-		StaticText {
-			disabled,
-			"FocusedEdit"
-		},
-		/* [3] */
-		{32, 8, 48, 237},
-		StaticText {
-			disabled,
-			""
-		},
-		/* [4] */
-		{56, 8, 72, 136},
-		StaticText {
-			disabled,
-			"Brought to you by:"
-		},
-		/* [5] */
-		{80, 24, 112, 167},
-		StaticText {
-			disabled,
-			"Cameron Henlin"
-		}
-	}
-};
-
-
-/* this ALRT and DITL are used as an error screen */
-
-resource 'ALRT' (rAboutAlert, purgeable) {
-	{40, 20, 194, 412},
+resource 'ALRT' (rUserAlert, purgeable) {
+	{40, 20, 180, 410},
 	rUserAlert,
 	{ /* array: 4 elements */
 		/* [1] */
@@ -146,6 +96,39 @@ resource 'ALRT' (rAboutAlert, purgeable) {
 };
 
 resource 'DITL' (rUserAlert, purgeable) {
+	{
+		{80, 150, 100, 230},
+		Button {
+			enabled,
+			"OK"
+		},
+		{10, 10, 60, 400},
+		StaticText {
+			disabled,
+			"^0"
+		}
+	}
+};
+
+/* this ALRT and DITL are used as an error screen */
+
+resource 'ALRT' (rAboutAlert, purgeable) {
+	{40, 20, 194, 412},
+	rAboutAlert,
+	{ /* array: 4 elements */
+		/* [1] */
+		OK, visible, silent,
+		/* [2] */
+		OK, visible, silent,
+		/* [3] */
+		OK, visible, silent,
+		/* [4] */
+		OK, visible, silent
+	},
+    centerMainScreen       // Where to show the alert
+};
+
+resource 'DITL' (rAboutAlert, purgeable) {
 	{ /* array DITLarray: 5 elements */
 		/* [1] */
 		{119, 8, 138, 80},

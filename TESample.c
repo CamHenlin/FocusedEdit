@@ -29,6 +29,7 @@
 #define MAX_RECEIVE_SIZE 32767
 
 void AlertUser( short error );
+void ShowIPAddresses();
 void EventLoop( void );
 void DoEvent( EventRecord *event );
 void AdjustCursor( Point mouse, RgnHandle region );
@@ -965,6 +966,8 @@ void AdjustMenus()
 	else
 		DisableItem(menu, iClose);
 
+	EnableItem(menu, iQuit);
+
 	menu = GetMenuHandle(mEdit);
 	undo = false;
 	cutCopyClear = false;
@@ -1043,6 +1046,10 @@ void DoMenuCommand(long menuResult)
 				case iQuit:
 					Terminate();
 					break;
+				case iIPAddresses:
+
+					ShowIPAddresses();
+					break;
 			}
 			break;
 		case mEdit:					/* call SystemEdit for DA editing & MultiFinder */
@@ -1054,8 +1061,7 @@ void DoMenuCommand(long menuResult)
 							PurgeSpace(&total, &contig);
 							if ((*te)->selEnd - (*te)->selStart + kTESlop > contig)
 								AlertUser(eNoSpaceCut);
-							else 
-							    {
+							else {
 								TECut(te);
 								if ( TEToScrap() != noErr ) {
 									AlertUser(eNoCut);
@@ -1466,8 +1472,7 @@ Boolean IsDAWindow(WindowPtr window)
 	reporting has a place even in the simplest application. The error number is used
 	to index an 'STR#' resource so that a relevant message can be displayed. */
 
-void AlertUser(short error)
-{
+void AlertUser(short error) {
 	short		itemHit;
 	Str255		message;
 
@@ -1481,4 +1486,18 @@ void AlertUser(short error)
 
 		return;
 	}
-} /* AlertUser */
+}
+
+void ShowIPAddresses() {
+
+	// char temp[256] = " ";
+	char message[MAX_RECEIVE_SIZE];
+
+	callFunctionOnCoprocessor("getValidAddresses", "", message);
+	// strncat(temp, message, strlen(message) + strlen(temp) > 256 ? 256 : strlen(message));
+	ParamText((unsigned char *)message, "\p", "\p", "\p");
+
+	writeSerialPortDebug(boutRefNum, message);
+
+	Alert(rUserAlert, nil);
+}

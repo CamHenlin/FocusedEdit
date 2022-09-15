@@ -981,7 +981,6 @@ void callFunctionOnCoprocessor(char* functionName, char* parameters, char* outpu
     #endif
     
     #ifdef DEBUGGING
-
         writeSerialPortDebug(boutRefNum, "callFunctionOnCoprocessor\n");
     #endif
 

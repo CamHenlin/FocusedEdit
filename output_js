@@ -8,6 +8,10 @@ const server = http.createServer(app)
 const { Server } = require("socket.io");
 const { text } = require('express')
 const io = new Server(server);
+const os = require('os');
+const networkInterfaces = os.networkInterfaces();
+let validAddresses = []
+
 const port = 3000
 const DEBUGGING = false
 
@@ -46,6 +50,26 @@ const html = `
 </script>
 </html>
 `
+
+// we want to get all of the IP addresses for the host machine so that we can return it to the Mac app
+// and the user can pull up the shared editor website in their browser
+for (const namedInterface of Object.keys(networkInterfaces)) {
+
+    for (const networkInterface of networkInterfaces[namedInterface]) {
+
+        if (!networkInterface || !networkInterface.family || networkInterface.family !== `IPv4`) {
+
+            continue
+        }
+
+        // if (networkInterface.address === `127.0.0.1`) {
+
+        //     continue
+        // }
+
+        validAddresses.push(`http://${networkInterface.address}:3000/`)
+    }
+}
 
 let coprocessorCallIndex = 0
 let textBuffer = ``
@@ -183,6 +207,11 @@ class FocusedEdit {
     getBuffer () {
 
         return sanitizedForOldMachineTextBuffer
+    }
+
+    getValidAddresses () {
+
+        return `x${validAddresses.join(`, `)}`
     }
 }
 

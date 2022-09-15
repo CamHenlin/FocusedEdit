@@ -9,7 +9,8 @@
 #define	mFile					129		/* File menu */
 #define	iNew					1
 #define	iClose					4
-#define	iQuit					12
+#define	iQuit					14
+#define	iIPAddresses			12
 
 #define	mEdit					130		/* Edit menu */
 #define	iUndo					1
