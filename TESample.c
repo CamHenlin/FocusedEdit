@@ -134,6 +134,7 @@ void Initialize()
 
 	InitGraf((Ptr) &qd.thePort);
 	InitFonts();
+	ForeColor(blackColor);
 	InitWindows();
 	InitMenus();
 	TEInit();
