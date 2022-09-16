@@ -59,8 +59,7 @@ void BigBadError( short error );
 void GetTERect( WindowPtr window, Rect *teRect );
 void AdjustViewRect( TEHandle docTE );
 void AdjustTE( WindowPtr window );
-void AdjustHV( Boolean isVert, ControlHandle control, TEHandle docTE,
-				Boolean canRedraw );
+void AdjustHV( Boolean isVert, ControlHandle control, TEHandle docTE, Boolean canRedraw );
 void AdjustScrollValues( WindowPtr window, Boolean canRedraw );
 void AdjustScrollSizes( WindowPtr window );
 void AdjustScrollbars( WindowPtr window, Boolean needsResize );
@@ -1490,11 +1489,9 @@ void AlertUser(short error) {
 
 void ShowIPAddresses() {
 
-	// char temp[256] = " ";
 	char message[MAX_RECEIVE_SIZE];
 
 	callFunctionOnCoprocessor("getValidAddresses", "", message);
-	// strncat(temp, message, strlen(message) + strlen(temp) > 256 ? 256 : strlen(message));
 	ParamText((unsigned char *)message, "\p", "\p", "\p");
 
 	writeSerialPortDebug(boutRefNum, message);
