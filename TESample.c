@@ -127,6 +127,7 @@ typedef struct {
 void Initialize()
 {
 	Handle	menuBar;
+	long	total, contig;
 	EventRecord event;
 	short	count;
 
@@ -134,7 +135,6 @@ void Initialize()
 
 	InitGraf((Ptr) &qd.thePort);
 	InitFonts();
-	ForeColor(blackColor);
 	InitWindows();
 	InitMenus();
 	TEInit();
@@ -188,7 +188,7 @@ void Initialize()
 		being set smaller than the minimum size by the user. This extra check acts to
 		insure that your application is starting from a solid memory foundation. */
 	 
-	// if ((long) GetApplLimit() - (long) ApplicationZone() < kMinHeap) BigBadError(eSmallSize);
+	if ((long) GetApplLimit() - (long) ApplicationZone() < kMinHeap) BigBadError(eSmallSize);
 	
 	// /*	Next, make sure that enough memory is free for your application to run. It
 	// 	is possible for a situation to arise where the heap may have been of required
@@ -204,16 +204,16 @@ void Initialize()
 	
 	// /* ZeroScrap(); */
 
-	// PurgeSpace(&total, &contig);
-	// if (total < kMinSpace) {
-	// 	if (UnloadScrap() != noErr)
-	// 		BigBadError(eNoMemory);
-	// 	else {
-	// 		PurgeSpace(&total, &contig);
-	// 		if (total < kMinSpace)
-	// 			BigBadError(eNoMemory);
-	// 	}
-	// }
+	PurgeSpace(&total, &contig);
+	if (total < kMinSpace) {
+		if (UnloadScrap() != noErr)
+			BigBadError(eNoMemory);
+		else {
+			PurgeSpace(&total, &contig);
+			if (total < kMinSpace)
+				BigBadError(eNoMemory);
+		}
+	}
 
 	/*	The extra benefit to waiting until after the Toolbox Managers have been initialized
 		to check memory is that we can now give the user an alert to tell him/her what
@@ -270,6 +270,7 @@ int main()
 {
 	writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: main");
 
+	MaxApplZone();
 	Initialize();					/* initialize the program */
 	UnloadSeg((Ptr) Initialize);	/* note that Initialize must not be in Main! */
 
@@ -279,7 +280,7 @@ int main()
 
 	setupCoprocessor("focusededit", "modem"); // could also be "printer", modem is 0 in PCE settings - printer would be 1
 
-    char programResult[MAX_RECEIVE_SIZE];
+	char programResult[MAX_RECEIVE_SIZE];
 	jsFunctionResponse = (char *)malloc(MAX_RECEIVE_SIZE);
 
 	sendProgramToCoprocessor((char *)OUTPUT_JS, programResult);

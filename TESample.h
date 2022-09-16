@@ -1,4 +1,4 @@
-#define kPrefSize				122
+#define kPrefSize				1024
 #define kMinSize				38
 	
 /* The following constants are used to identify menus and their items. The menu IDs
