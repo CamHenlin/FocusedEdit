@@ -10,7 +10,7 @@ set (CMAKE_C_FLAGS "-Ofast -Wuninitialized -Wmaybe-uninitialized -mcpu=68000 -mt
 
 project (te_sample)
 
-add_application(TESample
+add_application(FocusedEdit
    SerialHelper.c
    coprocessorjs.c
    TESample.c

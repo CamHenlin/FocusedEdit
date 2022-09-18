@@ -27,6 +27,7 @@
 #include "coprocessorjs.h"
 
 #define MAX_RECEIVE_SIZE 32767
+// #define DEBUGGING 1
 
 void AlertUser( short error );
 void ShowIPAddresses();
@@ -59,7 +60,8 @@ void BigBadError( short error );
 void GetTERect( WindowPtr window, Rect *teRect );
 void AdjustViewRect( TEHandle docTE );
 void AdjustTE( WindowPtr window );
-void AdjustHV( Boolean isVert, ControlHandle control, TEHandle docTE, Boolean canRedraw );
+void AdjustHV( Boolean isVert, ControlHandle control, TEHandle docTE,
+				Boolean canRedraw );
 void AdjustScrollValues( WindowPtr window, Boolean canRedraw );
 void AdjustScrollSizes( WindowPtr window );
 void AdjustScrollbars( WindowPtr window, Boolean needsResize );
@@ -73,7 +75,6 @@ Boolean TrapAvailable( short tNumber, TrapType tType );
 long int callIndex = 0L;
 int globalSelStart = 0;
 int globalSelEnd = 0;
-char *jsFunctionResponse;
 
 /* The "g" prefix is used to emphasize that a variable is global. */
 
@@ -268,7 +269,6 @@ Boolean TrapAvailable(short tNumber, TrapType tType)
 
 int main()
 {
-	writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: main");
 
 	MaxApplZone();
 	Initialize();					/* initialize the program */
@@ -278,14 +278,6 @@ int main()
 
 	writeSerialPortDebug(boutRefNum, "initializing focusededit");
 
-	setupCoprocessor("focusededit", "modem"); // could also be "printer", modem is 0 in PCE settings - printer would be 1
-
-	char programResult[MAX_RECEIVE_SIZE];
-	jsFunctionResponse = (char *)malloc(MAX_RECEIVE_SIZE);
-
-	sendProgramToCoprocessor((char *)OUTPUT_JS, programResult);
-
-	writeSerialPortDebug(boutRefNum, "program sent to coprocessor!");
 	SysBeep(1);
 
 	AdjustScrollSizes(FrontWindow());
@@ -334,6 +326,16 @@ void EventLoop()
 	Boolean		gotEvent;
 	EventRecord	event;
 	Point		mouse;
+
+	writeSerialPortDebug(boutRefNum, "setting up coprocessor");
+	setupCoprocessor("focusededit", "modem"); // could also be "printer", modem is 0 in PCE settings - printer would be 1
+
+	char programResult[256];
+
+	writeSerialPortDebug(boutRefNum, "sending to coprocessor");
+	sendProgramToCoprocessor((char *)OUTPUT_JS, programResult);
+
+	writeSerialPortDebug(boutRefNum, "program sent to coprocessor!");
 
 	cursorRgn = NewRgn();			/* we�ll pass WNE an empty region the 1st time thru */
 	do {
@@ -1491,9 +1493,11 @@ void AlertUser(short error) {
 
 void ShowIPAddresses() {
 
+	// char temp[256] = " ";
 	char message[MAX_RECEIVE_SIZE];
 
 	callFunctionOnCoprocessor("getValidAddresses", "", message);
+	// strncat(temp, message, strlen(message) + strlen(temp) > 256 ? 256 : strlen(message));
 	ParamText((unsigned char *)message, "\p", "\p", "\p");
 
 	writeSerialPortDebug(boutRefNum, message);

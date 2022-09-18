@@ -114,6 +114,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/TESample_APPL.dir/DependInfo.cmake"
-  "CMakeFiles/TESample.dir/DependInfo.cmake"
+  "CMakeFiles/FocusedEdit_APPL.dir/DependInfo.cmake"
+  "CMakeFiles/FocusedEdit.dir/DependInfo.cmake"
   )

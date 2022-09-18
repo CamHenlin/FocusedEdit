@@ -44,17 +44,17 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/camh/Documents/Retro68kApps/TESample
+CMAKE_SOURCE_DIR = /home/camh/Documents/Retro68kApps/FocusedEdit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/camh/Documents/Retro68kApps/TESample/build
+CMAKE_BINARY_DIR = /home/camh/Documents/Retro68kApps/FocusedEdit/build
 
 #=============================================================================
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/TESample_APPL.dir/all
-all: CMakeFiles/TESample.dir/all
+all: CMakeFiles/FocusedEdit_APPL.dir/all
+all: CMakeFiles/FocusedEdit.dir/all
 
 .PHONY : all
 
@@ -64,64 +64,64 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/TESample_APPL.dir/clean
-clean: CMakeFiles/TESample.dir/clean
+clean: CMakeFiles/FocusedEdit_APPL.dir/clean
+clean: CMakeFiles/FocusedEdit.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/TESample_APPL.dir
+# Target rules for target CMakeFiles/FocusedEdit_APPL.dir
 
 # All Build rule for target.
-CMakeFiles/TESample_APPL.dir/all: CMakeFiles/TESample.dir/all
-	$(MAKE) -f CMakeFiles/TESample_APPL.dir/build.make CMakeFiles/TESample_APPL.dir/depend
-	$(MAKE) -f CMakeFiles/TESample_APPL.dir/build.make CMakeFiles/TESample_APPL.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles --progress-num=5,6 "Built target TESample_APPL"
-.PHONY : CMakeFiles/TESample_APPL.dir/all
+CMakeFiles/FocusedEdit_APPL.dir/all: CMakeFiles/FocusedEdit.dir/all
+	$(MAKE) -f CMakeFiles/FocusedEdit_APPL.dir/build.make CMakeFiles/FocusedEdit_APPL.dir/depend
+	$(MAKE) -f CMakeFiles/FocusedEdit_APPL.dir/build.make CMakeFiles/FocusedEdit_APPL.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles --progress-num=5,6 "Built target FocusedEdit_APPL"
+.PHONY : CMakeFiles/FocusedEdit_APPL.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/TESample_APPL.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles 6
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/TESample_APPL.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles 0
-.PHONY : CMakeFiles/TESample_APPL.dir/rule
+CMakeFiles/FocusedEdit_APPL.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles 6
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/FocusedEdit_APPL.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles 0
+.PHONY : CMakeFiles/FocusedEdit_APPL.dir/rule
 
 # Convenience name for target.
-TESample_APPL: CMakeFiles/TESample_APPL.dir/rule
+FocusedEdit_APPL: CMakeFiles/FocusedEdit_APPL.dir/rule
 
-.PHONY : TESample_APPL
+.PHONY : FocusedEdit_APPL
 
 # clean rule for target.
-CMakeFiles/TESample_APPL.dir/clean:
-	$(MAKE) -f CMakeFiles/TESample_APPL.dir/build.make CMakeFiles/TESample_APPL.dir/clean
-.PHONY : CMakeFiles/TESample_APPL.dir/clean
+CMakeFiles/FocusedEdit_APPL.dir/clean:
+	$(MAKE) -f CMakeFiles/FocusedEdit_APPL.dir/build.make CMakeFiles/FocusedEdit_APPL.dir/clean
+.PHONY : CMakeFiles/FocusedEdit_APPL.dir/clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/TESample.dir
+# Target rules for target CMakeFiles/FocusedEdit.dir
 
 # All Build rule for target.
-CMakeFiles/TESample.dir/all:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/depend
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles --progress-num=1,2,3,4 "Built target TESample"
-.PHONY : CMakeFiles/TESample.dir/all
+CMakeFiles/FocusedEdit.dir/all:
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/depend
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles --progress-num=1,2,3,4 "Built target FocusedEdit"
+.PHONY : CMakeFiles/FocusedEdit.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/TESample.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles 4
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/TESample.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles 0
-.PHONY : CMakeFiles/TESample.dir/rule
+CMakeFiles/FocusedEdit.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles 4
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/FocusedEdit.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles 0
+.PHONY : CMakeFiles/FocusedEdit.dir/rule
 
 # Convenience name for target.
-TESample: CMakeFiles/TESample.dir/rule
+FocusedEdit: CMakeFiles/FocusedEdit.dir/rule
 
-.PHONY : TESample
+.PHONY : FocusedEdit
 
 # clean rule for target.
-CMakeFiles/TESample.dir/clean:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/clean
-.PHONY : CMakeFiles/TESample.dir/clean
+CMakeFiles/FocusedEdit.dir/clean:
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/clean
+.PHONY : CMakeFiles/FocusedEdit.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

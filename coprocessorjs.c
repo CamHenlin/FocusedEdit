@@ -31,8 +31,10 @@ void (*asyncCallback)();
 char *strtokm(char *str, const char *delim) {
 
     #ifdef DEBUG_FUNCTION_CALLS
+
         writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: strtokm");
     #endif
+
     static char *tok;
     static char *next;
     char *m;
@@ -45,9 +47,11 @@ char *strtokm(char *str, const char *delim) {
     m = strstr(tok, delim);
 
     if (m) {
+
         next = m + strlen(delim);
         *m = '\0';
     } else {
+
         next = NULL;
     }
 
@@ -204,13 +208,28 @@ void wait(float timeInSeconds) {
     //     time(&end);
     // } while (difftime(end, start) <= timeInSeconds);
 
-    long start; 
-    long end;
+    long start = TickCount();
+    long end = 0;
     long waitTicks = (long)timeInSeconds * 60;
 
-    start = TickCount();
+    if (waitTicks < 1) {
+
+        #ifdef DEBUGGING
+
+            writeSerialPortDebug(boutRefNum, "waitTicks < 1: return early");
+        #endif
+
+        return;
+    }
 
     do {
+
+        #ifdef DEBUGGING
+
+            char x[256];
+            sprintf(x, "start: %ld, end %ld, waitTicks %ld, end - start %ld", start, end, waitTicks, end - start);
+            writeSerialPortDebug(boutRefNum, x);
+        #endif
 
         end = TickCount();
     } while (end - start <= waitTicks);
@@ -224,11 +243,12 @@ void wait(float timeInSeconds) {
 char* _getReturnValueFromResponse(char* response, char* application_id, char* call_counter, char* operation, char* output) {
 
     #ifdef DEBUG_FUNCTION_CALLS
+
         writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: _getReturnValueFromResponse");
     #endif
     
     #ifdef DEBUGGING
-        
+
         writeSerialPortDebug(boutRefNum, "_getReturnValueFromResponse\n");
         writeSerialPortDebug(boutRefNum, response);
         writeSerialPortDebug(boutRefNum, "\n");
@@ -291,7 +311,7 @@ char* _getReturnValueFromResponse(char* response, char* application_id, char* ca
 
                 break;
             case 4:;
-            
+
                 #ifdef DEBUGGING
 
                     writeSerialPortDebug(boutRefNum, "setting output to token:\n");
@@ -412,11 +432,12 @@ void readSerialPortAsync() {
     doByteCountsMatchAsync = false;
 
     #ifdef DEBUGGING
+
         writeSerialPortDebug(boutRefNum, "readSerialPortAsync, enter loop");
     #endif
 
     // wait a moment for the buffer to fill
-    wait(0.01);
+    wait(0.02);
 
     void loopTop() {
 
@@ -460,7 +481,7 @@ void readSerialPortAsync() {
 
             lastByteCountAsync = (long int)byteCountAsync;
 
-            wait(0.01); // give the buffer a moment to fill
+            wait(0.02); // give the buffer a moment to fill
 
             #ifdef PRINT_ERRORS
                 short serGetBufStatus = SerGetBuf(incomingSerialPortReference.ioRefNum, &byteCountAsync);
@@ -630,15 +651,21 @@ void readSerialPort(char* output) {
     int loopCounter = 0;
 
     #ifdef DEBUGGING
-        writeSerialPortDebug(boutRefNum, "readSerialPort, enter loop");
+        writeSerialPortDebug(boutRefNum, "readSerialPort, enter loop. wait first");
     #endif
 
     // wait a moment for the buffer to fill
-    wait(0.01);
+    wait(0.02);
+
+    #ifdef DEBUGGING
+
+        writeSerialPortDebug(boutRefNum, "readSerialPort, done waiting");
+    #endif
 
     while (!done) {
 
         if (loopCounter++ > MAX_RECIEVE_LOOP_ITERATIONS) {
+
             #ifdef DEBUGGING
                 writeSerialPortDebug(boutRefNum, "coprocessor.readSerialPort MAX RECEIVE ITERATIONS");
             #endif
@@ -670,7 +697,7 @@ void readSerialPort(char* output) {
 
             lastByteCount = (long int)byteCount;
 
-            wait(0.01); // give the buffer a moment to fill
+            wait(0.02); // give the buffer a moment to fill
 
             #ifdef PRINT_ERRORS
                 short serGetBufStatus = SerGetBuf(incomingSerialPortReference.ioRefNum, &byteCount);
@@ -849,7 +876,7 @@ void setupCoprocessor(char *applicationId, const char *serialDeviceName) {
     GlobalSerialInputBuffer = malloc(sizeof(char) * MAX_RECEIVE_SIZE);
     tempOutput = malloc(sizeof(char) * MAX_RECEIVE_SIZE);
     application_id = malloc(sizeof(char) * 255);
-    
+
     strcpy(application_id, applicationId);
 
     setupSerialPort(serialDeviceName);

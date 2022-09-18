@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/camh/Documents/Retro68kApps/TESample
+CMAKE_SOURCE_DIR = /home/camh/Documents/Retro68kApps/FocusedEdit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/camh/Documents/Retro68kApps/TESample/build
+CMAKE_BINARY_DIR = /home/camh/Documents/Retro68kApps/FocusedEdit/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles /home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/TESample/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/camh/Documents/Retro68kApps/FocusedEdit/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,30 +111,30 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named TESample_APPL
+# Target rules for targets named FocusedEdit_APPL
 
 # Build rule for target.
-TESample_APPL: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 TESample_APPL
-.PHONY : TESample_APPL
+FocusedEdit_APPL: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 FocusedEdit_APPL
+.PHONY : FocusedEdit_APPL
 
 # fast build rule for target.
-TESample_APPL/fast:
-	$(MAKE) -f CMakeFiles/TESample_APPL.dir/build.make CMakeFiles/TESample_APPL.dir/build
-.PHONY : TESample_APPL/fast
+FocusedEdit_APPL/fast:
+	$(MAKE) -f CMakeFiles/FocusedEdit_APPL.dir/build.make CMakeFiles/FocusedEdit_APPL.dir/build
+.PHONY : FocusedEdit_APPL/fast
 
 #=============================================================================
-# Target rules for targets named TESample
+# Target rules for targets named FocusedEdit
 
 # Build rule for target.
-TESample: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 TESample
-.PHONY : TESample
+FocusedEdit: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 FocusedEdit
+.PHONY : FocusedEdit
 
 # fast build rule for target.
-TESample/fast:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/build
-.PHONY : TESample/fast
+FocusedEdit/fast:
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/build
+.PHONY : FocusedEdit/fast
 
 SerialHelper.obj: SerialHelper.c.obj
 
@@ -142,7 +142,7 @@ SerialHelper.obj: SerialHelper.c.obj
 
 # target to build an object file
 SerialHelper.c.obj:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/SerialHelper.c.obj
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/SerialHelper.c.obj
 .PHONY : SerialHelper.c.obj
 
 SerialHelper.i: SerialHelper.c.i
@@ -151,7 +151,7 @@ SerialHelper.i: SerialHelper.c.i
 
 # target to preprocess a source file
 SerialHelper.c.i:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/SerialHelper.c.i
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/SerialHelper.c.i
 .PHONY : SerialHelper.c.i
 
 SerialHelper.s: SerialHelper.c.s
@@ -160,7 +160,7 @@ SerialHelper.s: SerialHelper.c.s
 
 # target to generate assembly for a file
 SerialHelper.c.s:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/SerialHelper.c.s
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/SerialHelper.c.s
 .PHONY : SerialHelper.c.s
 
 TESample.obj: TESample.c.obj
@@ -169,7 +169,7 @@ TESample.obj: TESample.c.obj
 
 # target to build an object file
 TESample.c.obj:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/TESample.c.obj
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/TESample.c.obj
 .PHONY : TESample.c.obj
 
 TESample.i: TESample.c.i
@@ -178,7 +178,7 @@ TESample.i: TESample.c.i
 
 # target to preprocess a source file
 TESample.c.i:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/TESample.c.i
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/TESample.c.i
 .PHONY : TESample.c.i
 
 TESample.s: TESample.c.s
@@ -187,7 +187,7 @@ TESample.s: TESample.c.s
 
 # target to generate assembly for a file
 TESample.c.s:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/TESample.c.s
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/TESample.c.s
 .PHONY : TESample.c.s
 
 coprocessorjs.obj: coprocessorjs.c.obj
@@ -196,7 +196,7 @@ coprocessorjs.obj: coprocessorjs.c.obj
 
 # target to build an object file
 coprocessorjs.c.obj:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/coprocessorjs.c.obj
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/coprocessorjs.c.obj
 .PHONY : coprocessorjs.c.obj
 
 coprocessorjs.i: coprocessorjs.c.i
@@ -205,7 +205,7 @@ coprocessorjs.i: coprocessorjs.c.i
 
 # target to preprocess a source file
 coprocessorjs.c.i:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/coprocessorjs.c.i
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/coprocessorjs.c.i
 .PHONY : coprocessorjs.c.i
 
 coprocessorjs.s: coprocessorjs.c.s
@@ -214,7 +214,7 @@ coprocessorjs.s: coprocessorjs.c.s
 
 # target to generate assembly for a file
 coprocessorjs.c.s:
-	$(MAKE) -f CMakeFiles/TESample.dir/build.make CMakeFiles/TESample.dir/coprocessorjs.c.s
+	$(MAKE) -f CMakeFiles/FocusedEdit.dir/build.make CMakeFiles/FocusedEdit.dir/coprocessorjs.c.s
 .PHONY : coprocessorjs.c.s
 
 # Help Target
@@ -225,8 +225,8 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... TESample_APPL"
-	@echo "... TESample"
+	@echo "... FocusedEdit_APPL"
+	@echo "... FocusedEdit"
 	@echo "... SerialHelper.obj"
 	@echo "... SerialHelper.i"
 	@echo "... SerialHelper.s"

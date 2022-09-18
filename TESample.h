@@ -1,5 +1,5 @@
-#define kPrefSize				1024
-#define kMinSize				38
+#define kPrefSize				512
+#define kMinSize				512
 	
 /* The following constants are used to identify menus and their items. The menu IDs
    have an "m" prefix and the item numbers within each menu have an "i" prefix. */
@@ -98,7 +98,7 @@
 	 To derive this number, we ran under a MultiFinder partition that was
 	 our requested minimum size, as given in the 'SIZE' resource. */
 	 
-#define	kMinHeap				 (29 * 1024)
+#define	kMinHeap				 (512)
 	
 /* 1.01 - kMinSpace - This is the minimum result from PurgeSpace, when called
 	 at initialization time, for the application to run. This number acts
@@ -106,7 +106,7 @@
 	 application to run, including what has been taken up already by
 	 pre-loaded resources, the scrap, code, and other sundry memory blocks. */
 	 
-#define	kMinSpace				(20 * 1024)
+#define	kMinSpace				(512)
 
 /*	kExtremeNeg and kExtremePos are used to set up wide open rectangles and regions. */
 #define kExtremeNeg				-32768
