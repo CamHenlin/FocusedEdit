@@ -1,0 +1,1 @@
+/home/camh/Retro68-build/toolchain/bin/m68k-apple-macos-gcc -Ofast -Wuninitialized -Wmaybe-uninitialized -mcpu=68000 -mtune=68000 -m68000 -Wall   CMakeFiles/FocusedEdit.dir/SerialHelper.c.obj CMakeFiles/FocusedEdit.dir/coprocessorjs.c.obj CMakeFiles/FocusedEdit.dir/TESample.c.obj  -o FocusedEdit.code.bin 
