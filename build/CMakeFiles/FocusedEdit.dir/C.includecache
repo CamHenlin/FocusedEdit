@@ -97,6 +97,10 @@ stdbool.h
 -
 time.h
 -
+Windows.h
+-
+TextEdit.h
+-
 SerialHelper.h
 /home/camh/Documents/Retro68kApps/FocusedEdit/SerialHelper.h
 coprocessorjs.h

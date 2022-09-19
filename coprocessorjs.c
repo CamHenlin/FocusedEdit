@@ -6,6 +6,8 @@
 #include "string.h"
 #include <stdbool.h>
 #include <time.h>
+#include <Windows.h>
+#include <TextEdit.h>
 #include "SerialHelper.h"
 #include "coprocessorjs.h"
 
@@ -1101,6 +1103,34 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
     return;
 }
 
+typedef struct {
+	WindowRecord	docWindow;
+	TEHandle		docTE;
+	TEClickLoopUPP	docClick;
+} DocumentRecord, *DocumentPeek;
+
+void DoCoprocessorIdle() {
+    WindowPtr	window;
+
+    window = FrontWindow();
+
+    short		windowKind;
+
+    if (window == nil) {
+
+        return;
+    } else {	/* application windows have windowKinds = userKind (8) */
+        windowKind = ((WindowPeek) window)->windowKind;
+
+        if (windowKind != userKind) {
+
+            return;
+        }
+
+        TEIdle(((DocumentPeek) window)->docTE);
+    }
+} 
+
 void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     #ifdef DEBUG_FUNCTION_CALLS
@@ -1116,6 +1146,7 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
     while (asyncCallActive) {
 
         wait(0.2);
+        DoCoprocessorIdle();
     }
 
     const char* functionTemplate = "%s&&&%s";
