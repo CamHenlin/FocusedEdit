@@ -270,7 +270,7 @@ Boolean TrapAvailable(short tNumber, TrapType tType)
 int main()
 {
 
-	// MaxApplZone();
+	// MaxApplZone(); // this seems to entirely break the program within the coprocessor code
 	Initialize();					/* initialize the program */
 	UnloadSeg((Ptr) Initialize);	/* note that Initialize must not be in Main! */
 
