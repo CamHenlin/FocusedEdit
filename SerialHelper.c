@@ -16,10 +16,10 @@ OSErr setupDebugSerialPort(short refNum) {
 
     #ifdef PROFILING
 
-    // we need to bail on profiling, because the profile watcher will be reading this serial port
-    return;
-
+        // we need to bail on profiling, because the profile watcher will be reading this serial port
+        return;
     #endif
+
 #define MODEM_PORT_OUT   "\p.AOut" 
 #define PRINTER_PORT_OUT "\p.BOut" 
     // OSErr err;
@@ -63,23 +63,26 @@ OSErr writeSerialPortDebug(short refNum, const char* str)
 {
     #ifdef PROFILING
 
-    // we need to bail on profiling, because the profile watcher will be reading this serial port
-    return;
-
+        // we need to bail on profiling, because the profile watcher will be reading this serial port
+        return;
     #endif
+
     IOParam pb2;
     pb2.ioRefNum = serialPort;
-    
+
     char str2[1024];
     sprintf(str2, "%s\n", str);
     pb2.ioBuffer = (Ptr) str2;
     pb2.ioReqCount = strlen(str2);
-    
-    OSErr err = PBWrite((ParmBlkPtr)& pb2, 0);          
-    if (err < 0) return err;
-    
-    // hangs on Mac512K (write hasn't finished due to slow Speed when we wants to close driver
-    // err = CloseDriver(serialPort);
-    
+
+    OSErr err = PBWrite((ParmBlkPtr)& pb2, 0);
+
+    if (err < 0) {
+
+        char errMessage[100];
+        sprintf(errMessage, "err:%d", err);
+        writeSerialPortDebug(boutRefNum, errMessage);
+    }
+
     return err;
 }

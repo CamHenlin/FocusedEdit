@@ -12,8 +12,8 @@
 IOParam outgoingSerialPortReference;
 IOParam incomingSerialPortReference;
 // #define PRINT_ERRORS 1
-// #define DEBUGGING 1
-// #define DEBUG_FUNCTION_CALLS 1
+#define DEBUGGING 1
+#define DEBUG_FUNCTION_CALLS 1
 #define MAX_ATTEMPTS 10
 #define RECEIVE_WINDOW_SIZE 32767 // receive in up to 32kb chunks
 #define MAX_RECEIVE_SIZE 32767 // matching RECEIVE_WINDOW_SIZE for now
@@ -210,9 +210,11 @@ void wait(float timeInSeconds) {
 
     long start = TickCount();
     long end = 0;
-    long waitTicks = (long)timeInSeconds * 60;
+    float waitTicks = timeInSeconds * 60;
+    waitTicks = waitTicks * 100.0f + 0.5f;
+    long longWaitTicks = (long)waitTicks * 0.01f;
 
-    if (waitTicks < 1) {
+    if (longWaitTicks < 1) {
 
         #ifdef DEBUGGING
 
@@ -227,13 +229,17 @@ void wait(float timeInSeconds) {
         #ifdef DEBUGGING
 
             char x[256];
-            sprintf(x, "start: %ld, end %ld, waitTicks %ld, end - start %ld", start, end, waitTicks, end - start);
+            sprintf(x, "start: %ld, end %ld, waitTicks %ld, end - start %ld", start, end, longWaitTicks, end - start);
             writeSerialPortDebug(boutRefNum, x);
         #endif
 
         end = TickCount();
-    } while (end - start <= waitTicks);
+    } while (end - start <= longWaitTicks);
 
+    #ifdef DEBUGGING
+
+        writeSerialPortDebug(boutRefNum, "done waiting!");
+    #endif
     // char log[255];
     // sprintf(log, "start time was %ld end time was %ld split was %ld and wait ticks were %ld, input was %f\n ", start, end, end - start, waitTicks, timeInSeconds);
     // printf(log);
@@ -392,7 +398,10 @@ char outputAsync[MAX_RECEIVE_SIZE];
 void (*asyncFunctionCallCallback)(char *);
 
 void readSerialPortAsyncCallback() {
-    
+
+    #ifdef DEBUG_FUNCTION_CALLS
+        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: readSerialPortAsyncCallback");
+    #endif
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, "Got response from serial port:");
         writeSerialPortDebug(boutRefNum, serialPortResponseAsync);
@@ -627,8 +636,6 @@ void readSerialPortAsync() {
 
     return;
 }
-
-
 
 // void because this function re-assigns respo
 void readSerialPort(char* output) {
