@@ -839,9 +839,9 @@ void writeSerialPortAsync(const char* stringToWrite) {
     #ifdef DEBUG_FUNCTION_CALLS
         writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: writeSerialPortAsync");
     #endif
-    
+
     #ifdef DEBUGGING
-        
+
         writeSerialPortDebug(boutRefNum, "writeSerialPortAsync");
     #endif
 
@@ -858,14 +858,15 @@ void writeSerialPortAsync(const char* stringToWrite) {
 
     // PBWrite Definition From Inside Macintosh Volume II-185:
     // PBWrite takes ioReqCount bytes from the buffer pointed to by ioBuffer and attempts to write them to the device driver having the reference number ioRefNum.
-    // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset and the number of bytes actually written is returned in ioActCount.
+    // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset 
+    // and the number of bytes actually written is returned in ioActCount.
     PBWrite((ParmBlkPtr)& outgoingSerialPortReference, 1);
-    
+
     #ifdef DEBUGGING
 
         writeSerialPortDebug(boutRefNum, "PBWrite call complete, waiting on callback!");
     #endif
-    
+
     #ifdef PRINT_ERRORS
 
         char errMessage[100];
@@ -951,9 +952,9 @@ void writeToCoprocessorAsync(char* operation, char* operand) {
     #ifdef DEBUG_FUNCTION_CALLS
         writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: writeToCoprocessorAsync");
     #endif
-    
+
     #ifdef DEBUGGING
-        
+
         writeSerialPortDebug(boutRefNum, "writeToCoprocessorAsync\n");
     #endif
 
@@ -1106,11 +1107,16 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
         writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: callVoidFunctionOnCoprocessorAsync");
     #endif
-    
+
     #ifdef DEBUGGING
 
         writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync\n");
     #endif
+
+    while (asyncCallActive) {
+
+        wait(0.2);
+    }
 
     const char* functionTemplate = "%s&&&%s";
 
