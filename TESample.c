@@ -332,7 +332,7 @@ void EventLoop()
 
 	char programResult[256];
 	char *program = malloc(sizeof(OUTPUT_JS));
-	memcpy(program, OUTPUT_JS, sizeof(OUTPUT_JS));
+	memcpy(program, OUTPUT_JS, sizeof(OUTPUT_JS) - 1);
 
 	writeSerialPortDebug(boutRefNum, "sending to coprocessor");
 	sendProgramToCoprocessor(program, programResult);
