@@ -6,8 +6,6 @@
 #include "string.h"
 #include <stdbool.h>
 #include <time.h>
-#include <Windows.h>
-#include <TextEdit.h>
 #include "SerialHelper.h"
 #include "coprocessorjs.h"
 
@@ -27,6 +25,16 @@ int call_counter = 0;
 Boolean asyncCallActive = false;
 Boolean asyncCallComplete = false;
 void (*asyncCallback)();
+
+struct Node {
+    char data[255];
+    struct Node *next;
+};
+
+struct Queue {
+    struct Node *top;
+    struct Node *bottom;
+}*queue;
 
 // from: https://stackoverflow.com/questions/29847915/implementing-strtok-whose-delimiter-has-more-than-one-character
 // basically multichar delimter strtok
@@ -891,6 +899,11 @@ void setupCoprocessor(char *applicationId, const char *serialDeviceName) {
 
     setupSerialPort(serialDeviceName);
 
+    // initialize a queue to run async operations as we can only run one
+    // async operation at a time
+    queue = malloc(sizeof(struct Queue));
+    queue->top = queue->bottom = NULL;
+
     return;
 }
 
@@ -1103,33 +1116,45 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
     return;
 }
 
-typedef struct {
-	WindowRecord	docWindow;
-	TEHandle		docTE;
-	TEClickLoopUPP	docClick;
-} DocumentRecord, *DocumentPeek;
+void coprocessorEnqueue(char x[255]) {
 
-void DoCoprocessorIdle() {
-    WindowPtr	window;
+    struct Node *ptr = malloc(sizeof(struct Node));
+    strcpy(ptr->data, x);
+    ptr->next = NULL;
 
-    window = FrontWindow();
+    if (queue->top == NULL && queue->bottom == NULL) {
 
-    short		windowKind;
+      queue->top = queue->bottom = ptr;
 
-    if (window == nil) {
-
-        return;
-    } else {	/* application windows have windowKinds = userKind (8) */
-        windowKind = ((WindowPeek) window)->windowKind;
-
-        if (windowKind != userKind) {
-
-            return;
-        }
-
-        TEIdle(((DocumentPeek) window)->docTE);
+      return;
     }
-} 
+
+    queue->top->next = ptr;
+    queue->top = ptr;
+}
+
+char* coprocessorDequeue() {
+
+  if (queue->bottom == NULL) {
+
+      return 0;
+  }
+
+  struct Node *ptr=malloc(sizeof(struct Node));
+  ptr = queue->bottom;
+
+  if (queue->top == queue->bottom) {
+
+      queue->top=NULL;
+  }
+
+  queue->bottom = queue->bottom->next;
+  char *dequeued = malloc(sizeof(char) * 255);
+  strcpy(dequeued, ptr->data);
+  free(ptr);
+
+  return dequeued;
+}
 
 void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
@@ -1142,13 +1167,6 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
         writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync\n");
     #endif
-
-    while (asyncCallActive) {
-
-        wait(0.2);
-        DoCoprocessorIdle();
-    }
-
     const char* functionTemplate = "%s&&&%s";
 
     // over-allocate by 1kb for the operand (which could be whatever a programmer sends to this function) + message template wrapper
@@ -1157,6 +1175,12 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
+
+    if (asyncCallActive) {
+
+        coprocessorEnqueue(functionCallMessage);
+        return;
+    }
 
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, functionCallMessage);
@@ -1168,8 +1192,6 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
             writeSerialPortDebug(boutRefNum, "VOID writeToCoprocessorAsyncCallback");
         #endif
     }
-
-    // void writeToCoprocessorAsync(char* operation, char* operand, void (*callback)()) {
 
     asyncCallback = &writeToCoprocessorAsyncCallback;
 
@@ -1231,4 +1253,26 @@ void coprocessorEventLoopActions() {
     #endif
 
     asyncCallback();
+
+    // now that we're done calling back from the previous async call, we need to see if we have
+    // any other async calls queued up.
+    // TODO: this only supports void callbacks, we have more work to do in the queue if we want
+    // to carry forward other callback functions
+    if (queue->bottom != NULL) {
+
+        char *queueOutput = malloc(sizeof(char) * 255);
+        queueOutput = coprocessorDequeue();
+
+        void writeToCoprocessorAsyncCallback() {
+
+            #ifdef DEBUGGING
+                writeSerialPortDebug(boutRefNum, "SECONDARY VOID writeToCoprocessorAsyncCallback");
+            #endif
+        }
+
+        asyncCallback = &writeToCoprocessorAsyncCallback;
+
+        writeToCoprocessorAsync("VFUNCTION", queueOutput);
+        free(queueOutput);
+    }
 }
