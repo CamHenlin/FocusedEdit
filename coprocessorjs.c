@@ -1013,6 +1013,7 @@ void sendProgramToCoprocessor(char* program, char *output) {
     SetCursor(*GetCursor(watchCursor));
 
     writeToCoprocessor("PROGRAM", program);
+    free(program);
 
     char serialPortResponse[MAX_RECEIVE_SIZE];
     readSerialPort(serialPortResponse);
@@ -1020,7 +1021,7 @@ void sendProgramToCoprocessor(char* program, char *output) {
     getReturnValueFromResponse(serialPortResponse, "PROGRAM", output);
 
     SetCursor(&qd.arrow);
-    
+
     return;
 }
 

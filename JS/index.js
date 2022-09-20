@@ -12,7 +12,7 @@ const networkInterfaces = os.networkInterfaces();
 let validAddresses = []
 
 const port = 3000
-const DEBUGGING = false
+const DEBUGGING = true
 
 const html = `
 <html>
@@ -168,6 +168,11 @@ const insertStringToBuffer = (string, startPosition, endPosition) => {
 
     io.emit('message', textBuffer)
     updateTextBuffer()
+
+    if (DEBUGGING) {
+
+        console.log(`textBuffer is now: ${textBuffer}`)
+    }
 }
 
 class FocusedEdit {
