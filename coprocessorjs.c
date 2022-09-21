@@ -1138,18 +1138,27 @@ void coprocessorEnqueue(char *x) {
     #endif
 
     struct Node *ptr = malloc(sizeof(struct Node));
+
+    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue1");
     strcpy(ptr->data, x);
+    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue2");
     ptr->next = NULL;
+    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue3");
 
     if (queue->top == NULL && queue->bottom == NULL) {
+    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue IF - 1");
 
       queue->top = queue->bottom = ptr;
+    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue IF - 2");
 
       return;
     }
 
+    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue4");
     queue->top->next = ptr;
+    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue5");
     queue->top = ptr;
+    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue6");
 }
 
 char* coprocessorDequeue() {
