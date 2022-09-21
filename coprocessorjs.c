@@ -844,6 +844,8 @@ OSErr writeSerialPort(const char* stringToWrite) {
     return err;
 }
 
+char *writeString;
+
 void writeSerialPortAsync(const char* stringToWrite) {
 
     #ifdef DEBUG_FUNCTION_CALLS
@@ -855,13 +857,13 @@ void writeSerialPortAsync(const char* stringToWrite) {
         writeSerialPortDebug(boutRefNum, "writeSerialPortAsync");
     #endif
 
-    char *writeString = malloc(MAX_RECEIVE_SIZE);
+    free(writeString);
+    writeString = malloc(MAX_RECEIVE_SIZE);
     memset(writeString, 0, MAX_RECEIVE_SIZE);
     sprintf(writeString, "%s", stringToWrite);
 
     void asyncIOCompletionCallback() {
 
-        free(writeString);
         asyncCallComplete = true;
     }
 
