@@ -1131,7 +1131,7 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
     return;
 }
 
-void coprocessorEnqueue(char x[MAX_RECEIVE_SIZE]) {
+void coprocessorEnqueue(char *x) {
 
     #ifdef DEBUG_FUNCTION_CALLS
         writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: coprocessorEnqueue");
