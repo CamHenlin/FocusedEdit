@@ -107,7 +107,7 @@ void setupPBControlForSerialPort(short serialPortShort) {
     CntrlParam cb;
     cb.ioCRefNum = serialPortShort; // TODO: this is always 0 - does it matter? should we hard code 0 here? research
     cb.csCode = 8; // TODO: need to look up and document what csCode = 8 means
-    cb.csParam[0] = stop10 | noParity | data8 | baud28800; // 28.8k has been pretty reliable on my Macintosh Classic...
+    cb.csParam[0] = stop10 | noParity | data8 | baud19200; // 28.8k has been pretty reliable on my Macintosh Classic...
     OSErr err = PBControl ((ParmBlkPtr) & cb, 0); // PBControl definition: http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Networking/Networking-296.html
 
     #ifdef PRINT_ERRORS
