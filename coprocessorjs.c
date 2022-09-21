@@ -12,8 +12,8 @@
 IOParam outgoingSerialPortReference;
 IOParam incomingSerialPortReference;
 // #define PRINT_ERRORS 1
-// #define DEBUGGING 1
-// #define DEBUG_FUNCTION_CALLS 1
+#define DEBUGGING 1
+#define DEBUG_FUNCTION_CALLS 1
 #define MAX_ATTEMPTS 10
 #define RECEIVE_WINDOW_SIZE 32767 // receive in up to 32kb chunks
 #define MAX_RECEIVE_SIZE 32767 // matching RECEIVE_WINDOW_SIZE for now
@@ -1133,6 +1133,10 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
 
 void coprocessorEnqueue(char x[MAX_RECEIVE_SIZE]) {
 
+    #ifdef DEBUG_FUNCTION_CALLS
+        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: coprocessorEnqueue");
+    #endif
+
     struct Node *ptr = malloc(sizeof(struct Node));
     strcpy(ptr->data, x);
     ptr->next = NULL;
@@ -1150,25 +1154,29 @@ void coprocessorEnqueue(char x[MAX_RECEIVE_SIZE]) {
 
 char* coprocessorDequeue() {
 
-  if (queue->bottom == NULL) {
+    #ifdef DEBUG_FUNCTION_CALLS
+        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: coprocessorDequeue");
+    #endif
 
-      return 0;
-  }
+    if (queue->bottom == NULL) {
 
-  struct Node *ptr=malloc(sizeof(struct Node));
-  ptr = queue->bottom;
+        return 0;
+    }
 
-  if (queue->top == queue->bottom) {
+    struct Node *ptr=malloc(sizeof(struct Node));
+    ptr = queue->bottom;
 
-      queue->top=NULL;
-  }
+    if (queue->top == queue->bottom) {
 
-  queue->bottom = queue->bottom->next;
-  char *dequeued = malloc(MAX_RECEIVE_SIZE);
-  strcpy(dequeued, ptr->data);
-  free(ptr);
+        queue->top=NULL;
+    }
 
-  return dequeued;
+    queue->bottom = queue->bottom->next;
+    char *dequeued = malloc(MAX_RECEIVE_SIZE);
+    strcpy(dequeued, ptr->data);
+    free(ptr);
+
+    return dequeued;
 }
 
 void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
