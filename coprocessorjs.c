@@ -68,11 +68,6 @@ char *strtokm(char *str, const char *delim) {
     return tok;
 }
 
-void asyncIOCompletionCallback() {
-
-    asyncCallComplete = true;
-}
-
 /*
 // http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Devices/Devices-320.html
 Read more: http://stason.org/TULARC/os-macintosh/programming/7-1-How-do-I-get-at-the-serial-ports-Communications-and-N.html#ixzz4cIxU3Tob this one is only useful for enumerating ports
@@ -624,6 +619,11 @@ void readSerialPortAsync() {
 
         loopTop();
 
+        void asyncIOCompletionCallback() {
+
+            asyncCallComplete = true;
+        }
+
         incomingSerialPortReference.ioCompletion = &asyncIOCompletionCallback;
         asyncCallback = &loopBottom;
         asyncCallActive = true;
@@ -855,8 +855,18 @@ void writeSerialPortAsync(const char* stringToWrite) {
         writeSerialPortDebug(boutRefNum, "writeSerialPortAsync");
     #endif
 
-    outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
-    outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
+    char *writeString = malloc(MAX_RECEIVE_SIZE);
+    memset(writeString, 0, MAX_RECEIVE_SIZE);
+    sprintf(writeString, "%s", stringToWrite);
+
+    void asyncIOCompletionCallback() {
+
+        free(writeString);
+        asyncCallComplete = true;
+    }
+
+    outgoingSerialPortReference.ioBuffer = (Ptr)writeString;
+    outgoingSerialPortReference.ioReqCount = strlen(writeString);
     outgoingSerialPortReference.ioCompletion = &asyncIOCompletionCallback;
     asyncCallActive = true;
 
