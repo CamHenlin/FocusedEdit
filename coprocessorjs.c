@@ -1140,7 +1140,7 @@ void coprocessorEnqueue(char *x) {
     struct Node *ptr = malloc(sizeof(struct Node));
 
     writeSerialPortDebug(boutRefNum, "coprocessorEnqueue1");
-    strcpy(ptr->data, x);
+    sprintf(ptr->data, "%s", x);
     writeSerialPortDebug(boutRefNum, "coprocessorEnqueue2");
     ptr->next = NULL;
     writeSerialPortDebug(boutRefNum, "coprocessorEnqueue3");
