@@ -27,7 +27,7 @@ Boolean asyncCallComplete = false;
 void (*asyncCallback)();
 
 struct Node {
-    char data[255];
+    char data[MAX_RECEIVE_SIZE];
     struct Node *next;
 };
 
@@ -1119,7 +1119,7 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
     return;
 }
 
-void coprocessorEnqueue(char x[255]) {
+void coprocessorEnqueue(char x[MAX_RECEIVE_SIZE]) {
 
     struct Node *ptr = malloc(sizeof(struct Node));
     strcpy(ptr->data, x);
@@ -1152,7 +1152,7 @@ char* coprocessorDequeue() {
   }
 
   queue->bottom = queue->bottom->next;
-  char *dequeued = malloc(sizeof(char) * 255);
+  char *dequeued = malloc(MAX_RECEIVE_SIZE);
   strcpy(dequeued, ptr->data);
   free(ptr);
 
@@ -1174,14 +1174,20 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     // over-allocate by 1kb for the operand (which could be whatever a programmer sends to this function) + message template wrapper
     // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
-    char functionCallMessage[strlen(parameters) + 1024];
+    char *functionCallMessage = malloc(MAX_RECEIVE_SIZE);
+    memset(functionCallMessage, 0, MAX_RECEIVE_SIZE);
 
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
 
     if (asyncCallActive) {
 
+        writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync: async call already active, queueing:");
+        writeSerialPortDebug(boutRefNum, functionCallMessage);
+
         coprocessorEnqueue(functionCallMessage);
+
+        free(functionCallMessage);
         return;
     }
 
@@ -1199,6 +1205,7 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
     asyncCallback = &writeToCoprocessorAsyncCallback;
 
     writeToCoprocessorAsync("VFUNCTION", functionCallMessage);
+    free(functionCallMessage);
 
     return;
 }
@@ -1263,7 +1270,7 @@ void coprocessorEventLoopActions() {
     // to carry forward other callback functions
     if (queue->bottom != NULL) {
 
-        char *queueOutput = malloc(sizeof(char) * 255);
+        char *queueOutput = malloc(MAX_RECEIVE_SIZE);
         queueOutput = coprocessorDequeue();
 
         void writeToCoprocessorAsyncCallback() {
