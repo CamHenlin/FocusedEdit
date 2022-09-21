@@ -179,7 +179,7 @@ class FocusedEdit {
 
     insertStringToBuffer (string, startPosition, endPosition, callIndex) {
 
-        if (!string || !startPosition || !endPosition || !callIndex) {
+        if (!string || string === `` || !startPosition || !endPosition || !callIndex) {
 
             return
         }
@@ -194,6 +194,11 @@ class FocusedEdit {
         // we have to track the call index because sometimes the serial port can be slow,
         // and calls will come in out of order. If we're not ready for the call, rerun it in 50ms
         if (Number(callIndex) !== coprocessorCallIndex) {
+
+            if (DEBUGGING) {
+
+                console.log(`Number(callIndex) !== coprocessorCallIndex, callIndex: ${callIndex}, coprocessorCallIndex: ${coprocessorCallIndex}, queueing retry`)
+            }
 
             return setTimeout(() => {
 
