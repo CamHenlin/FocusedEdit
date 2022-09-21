@@ -331,11 +331,13 @@ void EventLoop()
 	setupCoprocessor("focusededit", "modem"); // could also be "printer", modem is 0 in PCE settings - printer would be 1
 
 	char programResult[256];
-	char *program = malloc(sizeof(OUTPUT_JS));
-	memcpy(program, OUTPUT_JS, sizeof(OUTPUT_JS) - 1);
+	char *program = malloc(OUTPUT_JS_LEN * sizeof(char));
+	memcpy(program, OUTPUT_JS, OUTPUT_JS_LEN);
 
 	writeSerialPortDebug(boutRefNum, "sending to coprocessor");
 	sendProgramToCoprocessor(program, programResult);
+
+	free(program);
 
 	writeSerialPortDebug(boutRefNum, "program sent to coprocessor!");
 
