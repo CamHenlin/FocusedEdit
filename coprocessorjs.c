@@ -27,7 +27,7 @@ Boolean asyncCallComplete = false;
 void (*asyncCallback)();
 
 struct Node {
-    char data[MAX_RECEIVE_SIZE];
+    char *data;
     struct Node *next;
 };
 
@@ -1140,7 +1140,7 @@ void coprocessorEnqueue(char *x) {
     struct Node *ptr = malloc(sizeof(struct Node));
 
     writeSerialPortDebug(boutRefNum, "coprocessorEnqueue1");
-    sprintf(ptr->data, "%s", x);
+    ptr->data = strdup(x);
     writeSerialPortDebug(boutRefNum, "coprocessorEnqueue2");
     ptr->next = NULL;
     writeSerialPortDebug(boutRefNum, "coprocessorEnqueue3");
@@ -1172,7 +1172,7 @@ char* coprocessorDequeue() {
         return 0;
     }
 
-    struct Node *ptr=malloc(sizeof(struct Node));
+    struct Node *ptr = malloc(sizeof(struct Node));
     ptr = queue->bottom;
 
     if (queue->top == queue->bottom) {
