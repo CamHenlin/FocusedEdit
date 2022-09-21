@@ -12,8 +12,8 @@
 IOParam outgoingSerialPortReference;
 IOParam incomingSerialPortReference;
 // #define PRINT_ERRORS 1
-#define DEBUGGING 1
-#define DEBUG_FUNCTION_CALLS 1
+// #define DEBUGGING 1
+// #define DEBUG_FUNCTION_CALLS 1
 #define MAX_ATTEMPTS 10
 #define RECEIVE_WINDOW_SIZE 32767 // receive in up to 32kb chunks
 #define MAX_RECEIVE_SIZE 32767 // matching RECEIVE_WINDOW_SIZE for now
@@ -536,10 +536,17 @@ void readSerialPortAsync() {
 
     void complete() {
 
-        writeSerialPortDebug(boutRefNum, "readSerialPortAsync: complete");
-        writeSerialPortDebug(boutRefNum, tempOutput);
+        #ifdef DEBUGGING
+            writeSerialPortDebug(boutRefNum, "readSerialPortAsync: complete");
+            writeSerialPortDebug(boutRefNum, tempOutput);
+        #endif
+
         memcpy(serialPortResponseAsync, tempOutput, totalByteCountAsync);
-        writeSerialPortDebug(boutRefNum, serialPortResponseAsync);
+
+        #ifdef DEBUGGING
+            writeSerialPortDebug(boutRefNum, serialPortResponseAsync);
+        #endif
+
         // // attach the gathered up output from the buffer to the output variable
         // memcpy(output, tempOutput, totalByteCountAsync);
 
@@ -1139,26 +1146,18 @@ void coprocessorEnqueue(char *x) {
 
     struct Node *ptr = malloc(sizeof(struct Node));
 
-    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue1");
     ptr->data = strdup(x);
-    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue2");
     ptr->next = NULL;
-    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue3");
 
     if (queue->top == NULL && queue->bottom == NULL) {
-    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue IF - 1");
 
       queue->top = queue->bottom = ptr;
-    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue IF - 2");
 
       return;
     }
 
-    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue4");
     queue->top->next = ptr;
-    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue5");
     queue->top = ptr;
-    writeSerialPortDebug(boutRefNum, "coprocessorEnqueue6");
 }
 
 char* coprocessorDequeue() {
@@ -1211,8 +1210,10 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     if (asyncCallActive) {
 
-        writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync: async call already active, queueing:");
-        writeSerialPortDebug(boutRefNum, functionCallMessage);
+        #ifdef DEBUGGING
+            writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync: async call already active, queueing:");
+            writeSerialPortDebug(boutRefNum, functionCallMessage);
+        #endif
 
         coprocessorEnqueue(functionCallMessage);
 

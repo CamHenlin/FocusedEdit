@@ -1494,13 +1494,17 @@ void AlertUser(short error) {
 void ShowIPAddresses() {
 
 	// char temp[256] = " ";
-	char message[MAX_RECEIVE_SIZE];
+	char *message = malloc(MAX_RECEIVE_SIZE);
 
 	callFunctionOnCoprocessor("getValidAddresses", "", message);
 	// strncat(temp, message, strlen(message) + strlen(temp) > 256 ? 256 : strlen(message));
 	ParamText((unsigned char *)message, "\p", "\p", "\p");
 
-	writeSerialPortDebug(boutRefNum, message);
+	#ifdef DEBUGGING
+		writeSerialPortDebug(boutRefNum, message);
+	#endif
 
 	Alert(rUserAlert, nil);
+
+	free(message);
 }
