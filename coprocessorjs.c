@@ -102,7 +102,7 @@ void setupPBControlForSerialPort(short serialPortShort) {
     CntrlParam cb;
     cb.ioCRefNum = serialPortShort; // TODO: this is always 0 - does it matter? should we hard code 0 here? research
     cb.csCode = 8; // TODO: need to look up and document what csCode = 8 means
-    cb.csParam[0] = stop10 | noParity | data8 | baud19200; // 28.8k has been pretty reliable on my Macintosh Classic...
+    cb.csParam[0] = stop10 | noParity | data8 | baud28800; // 28.8k has been pretty reliable on my Macintosh Classic...
     OSErr err = PBControl ((ParmBlkPtr) & cb, 0); // PBControl definition: http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Networking/Networking-296.html
 
     #ifdef PRINT_ERRORS
@@ -860,22 +860,12 @@ void writeSerialPortAsync(const char* stringToWrite) {
     #endif
 
     #ifdef DEBUGGING
-
+        
         writeSerialPortDebug(boutRefNum, "writeSerialPortAsync");
     #endif
 
-    free(writeString);
-    writeString = malloc(MAX_RECEIVE_SIZE);
-    memset(writeString, 0, MAX_RECEIVE_SIZE);
-    sprintf(writeString, "%s", stringToWrite);
-
-    void asyncIOCompletionCallback() {
-
-        asyncCallComplete = true;
-    }
-
-    outgoingSerialPortReference.ioBuffer = (Ptr)writeString;
-    outgoingSerialPortReference.ioReqCount = strlen(writeString);
+    outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
+    outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
     outgoingSerialPortReference.ioCompletion = &asyncIOCompletionCallback;
     asyncCallActive = true;
 
@@ -887,15 +877,14 @@ void writeSerialPortAsync(const char* stringToWrite) {
 
     // PBWrite Definition From Inside Macintosh Volume II-185:
     // PBWrite takes ioReqCount bytes from the buffer pointed to by ioBuffer and attempts to write them to the device driver having the reference number ioRefNum.
-    // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset 
-    // and the number of bytes actually written is returned in ioActCount.
+    // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset and the number of bytes actually written is returned in ioActCount.
     PBWrite((ParmBlkPtr)& outgoingSerialPortReference, 1);
-
+    
     #ifdef DEBUGGING
 
         writeSerialPortDebug(boutRefNum, "PBWrite call complete, waiting on callback!");
     #endif
-
+    
     #ifdef PRINT_ERRORS
 
         char errMessage[100];
@@ -1051,7 +1040,7 @@ void callFunctionOnCoprocessor(char* functionName, char* parameters, char* outpu
     #ifdef DEBUG_FUNCTION_CALLS
         writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: callFunctionOnCoprocessor");
     #endif
-    
+
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, "callFunctionOnCoprocessor\n");
     #endif
@@ -1180,7 +1169,7 @@ char* coprocessorDequeue() {
     }
 
     queue->bottom = queue->bottom->next;
-    char *dequeued = malloc(MAX_RECEIVE_SIZE);
+    char *dequeued = malloc(strlen(ptr->data) * sizeof(char));
     strcpy(dequeued, ptr->data);
     free(ptr);
 
@@ -1198,12 +1187,12 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
         writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync\n");
     #endif
+
     const char* functionTemplate = "%s&&&%s";
 
     // over-allocate by 1kb for the operand (which could be whatever a programmer sends to this function) + message template wrapper
     // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
-    char *functionCallMessage = malloc(MAX_RECEIVE_SIZE);
-    memset(functionCallMessage, 0, MAX_RECEIVE_SIZE);
+    char functionCallMessage[strlen(parameters) + 1024];
 
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
@@ -1217,7 +1206,6 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
         coprocessorEnqueue(functionCallMessage);
 
-        free(functionCallMessage);
         return;
     }
 
@@ -1235,7 +1223,6 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
     asyncCallback = &writeToCoprocessorAsyncCallback;
 
     writeToCoprocessorAsync("VFUNCTION", functionCallMessage);
-    free(functionCallMessage);
 
     return;
 }
