@@ -853,6 +853,11 @@ OSErr writeSerialPort(const char* stringToWrite) {
 
 char *writeString;
 
+void asyncIOCompletionCallback() {
+
+    asyncCallComplete = true;
+}
+
 void writeSerialPortAsync(const char* stringToWrite) {
 
     #ifdef DEBUG_FUNCTION_CALLS
@@ -879,12 +884,12 @@ void writeSerialPortAsync(const char* stringToWrite) {
     // PBWrite takes ioReqCount bytes from the buffer pointed to by ioBuffer and attempts to write them to the device driver having the reference number ioRefNum.
     // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset and the number of bytes actually written is returned in ioActCount.
     PBWrite((ParmBlkPtr)& outgoingSerialPortReference, 1);
-    
+
     #ifdef DEBUGGING
 
         writeSerialPortDebug(boutRefNum, "PBWrite call complete, waiting on callback!");
     #endif
-    
+
     #ifdef PRINT_ERRORS
 
         char errMessage[100];
@@ -949,8 +954,7 @@ void writeToCoprocessor(char* operation, char* operand) {
 
     // over-allocate by 1kb for the operand (which could be an entire nodejs app) + message template wrapper
     // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
-    char *messageToSend = malloc(MAX_RECEIVE_SIZE);
-    memset(messageToSend, 0, MAX_RECEIVE_SIZE);
+    char messageToSend[strlen(operand) + 1024];
 
     sprintf(call_id, "%d", call_counter++);
 
@@ -967,8 +971,6 @@ void writeToCoprocessor(char* operation, char* operand) {
     #else
         writeSerialPort(messageToSend);
     #endif
-
-    free(messageToSend);
 
     return;
 }
@@ -1199,10 +1201,10 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     if (asyncCallActive) {
 
-        #ifdef DEBUGGING
+        // #ifdef DEBUGGING
             writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync: async call already active, queueing:");
             writeSerialPortDebug(boutRefNum, functionCallMessage);
-        #endif
+        // #endif
 
         coprocessorEnqueue(functionCallMessage);
 
@@ -1287,8 +1289,7 @@ void coprocessorEventLoopActions() {
     // to carry forward other callback functions
     if (queue->bottom != NULL) {
 
-        char *queueOutput = malloc(MAX_RECEIVE_SIZE);
-        queueOutput = coprocessorDequeue();
+        char *queueOutput = coprocessorDequeue();
 
         void writeToCoprocessorAsyncCallback() {
 
@@ -1300,6 +1301,5 @@ void coprocessorEventLoopActions() {
         asyncCallback = &writeToCoprocessorAsyncCallback;
 
         writeToCoprocessorAsync("VFUNCTION", queueOutput);
-        free(queueOutput);
     }
 }

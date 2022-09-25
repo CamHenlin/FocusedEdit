@@ -276,7 +276,9 @@ int main()
 
 	setupDebugSerialPort(boutRefNum);
 
-	writeSerialPortDebug(boutRefNum, "initializing focusededit");
+	#ifdef DEBUGGING
+		writeSerialPortDebug(boutRefNum, "initializing focusededit");
+	#endif
 
 	SysBeep(1);
 
@@ -289,6 +291,15 @@ char nextTextBuffer[MAX_RECEIVE_SIZE];
 char lastTextBuffer[MAX_RECEIVE_SIZE];
 
 void pullText() {
+
+	if (asyncCallActive) {
+
+		#ifdef DEBUGGING
+			writeSerialPortDebug(boutRefNum, "async call active, refusing to pull text");
+		#endif
+
+		return;
+	}
 
 	Rect teRect;
 	DocumentPeek doc;
@@ -317,7 +328,7 @@ void pullText() {
 
 void EventLoop()
 {
-    #ifdef DEBUGGING
+	#ifdef DEBUGGING
 		writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: EventLoop");
 	#endif
 
@@ -327,36 +338,45 @@ void EventLoop()
 	EventRecord	event;
 	Point		mouse;
 
-	writeSerialPortDebug(boutRefNum, "setting up coprocessor");
+	#ifdef DEBUGGING
+		writeSerialPortDebug(boutRefNum, "setting up coprocessor");
+	#endif
+
 	setupCoprocessor("focusededit", "modem"); // could also be "printer", modem is 0 in PCE settings - printer would be 1
 
 	char programResult[256];
 
-	writeSerialPortDebug(boutRefNum, "sending to coprocessor");
+	#ifdef DEBUGGING
+		writeSerialPortDebug(boutRefNum, "sending to coprocessor");
+	#endif
+
 	sendProgramToCoprocessor((char *)OUTPUT_JS, programResult);
 
-	writeSerialPortDebug(boutRefNum, "program sent to coprocessor!");
+	#ifdef DEBUGGING
+		writeSerialPortDebug(boutRefNum, "program sent to coprocessor!");
+	#endif
 
 	cursorRgn = NewRgn();			/* we�ll pass WNE an empty region the 1st time thru */
+
 	do {
 
-		if (TickCount() - lastPulledText > 300) {
+		if (TickCount() - lastPulledText > 500) {
 
-            lastPulledText = TickCount();
+			pullText();
 
-            pullText();
-        } 
+			lastPulledText = TickCount();
+		}
 
 		/* use WNE if it is available */
 		if ( gHasWaitNextEvent ) {
 			GetGlobalMouse(&mouse);
 			AdjustCursor(mouse, cursorRgn);
 			gotEvent = WaitNextEvent(everyEvent, &event, GetSleep(), cursorRgn);
-		}
-		else {
+		} else {
 			SystemTask();
 			gotEvent = GetNextEvent(everyEvent, &event);
 		}
+
 		if ( gotEvent ) {
 			/* make sure we have the right cursor before handling the event */
 			AdjustCursor(event.where, cursorRgn);
@@ -364,8 +384,7 @@ void EventLoop()
 
 			// make sure we don't try to pull text if the user is actively using the application
 			lastPulledText = TickCount();
-		}
-		else {
+		} else {
 			DoIdle();
 			coprocessorEventLoopActions();
 
@@ -752,8 +771,11 @@ void DoContentClick(WindowPtr window, EventRecord *event)
 
  void emptyCallback(char *output) {
 
-	writeSerialPortDebug(boutRefNum, "emptyCallback\n");
-	writeSerialPortDebug(boutRefNum, output);
+	#ifdef DEBUGGING
+		writeSerialPortDebug(boutRefNum, "emptyCallback\n");
+		writeSerialPortDebug(boutRefNum, output);
+	#endif
+
 	SetCursor(*GetCursor(plusCursor));
 }
 
@@ -781,6 +803,22 @@ void DoKeyDown(EventRecord *event)
 		if ((key < 28 || key > 127) && key != 8 && key != 13) {
 
 			return;
+		}
+
+		// this is the delete key, doesn't seem to be respected in the TEKey event properly
+		// instead our strategy is to convert to a backspace, then advance the cursor 1 character
+		// and then run the key through the rest of the function
+		if (key == 127) {
+
+			key = 8;
+
+			if ((*te)->selEnd == (*te)->selStart) {
+
+				(*te)->selStart++;
+				(*te)->selEnd++;
+				globalSelStart++;
+				globalSelEnd++;
+			}
 		}
 
 		TEKey(key, te);
@@ -1493,7 +1531,6 @@ void AlertUser(short error) {
 
 void ShowIPAddresses() {
 
-	// char temp[256] = " ";
 	char *message = malloc(MAX_RECEIVE_SIZE);
 
 	callFunctionOnCoprocessor("getValidAddresses", "", message);

@@ -161,6 +161,17 @@ const insertStringToBuffer = (string, startPosition, endPosition) => {
         case 65533:
 
             return
+        // delete -- this is how delete would work, but we don't actually create a delete key event ever in our mac app. 
+        // see the DoKeyDown function in TESample.c
+        // case 127:
+
+        //     if (startPosition === endPosition) {
+
+        //         endPosition++
+        //     }
+
+        //     textBuffer = `${textBuffer.slice(0, startPosition)}${textBuffer.slice(endPosition, textBuffer.length)}`
+        //     break
         default:
 
             textBuffer = `${textBuffer.slice(0, startPosition)}${string}${textBuffer.slice(endPosition, textBuffer.length)}`
