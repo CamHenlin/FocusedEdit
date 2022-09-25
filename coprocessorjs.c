@@ -26,16 +26,6 @@ Boolean asyncCallActive = false;
 Boolean asyncCallComplete = false;
 void (*asyncCallback)();
 
-struct Node {
-    char *data;
-    struct Node *next;
-};
-
-struct Queue {
-    struct Node *top;
-    struct Node *bottom;
-}*queue;
-
 // from: https://stackoverflow.com/questions/29847915/implementing-strtok-whose-delimiter-has-more-than-one-character
 // basically multichar delimter strtok
 char *strtokm(char *str, const char *delim) {
@@ -912,11 +902,6 @@ void setupCoprocessor(char *applicationId, const char *serialDeviceName) {
 
     setupSerialPort(serialDeviceName);
 
-    // initialize a queue to run async operations as we can only run one
-    // async operation at a time
-    queue = malloc(sizeof(struct Queue));
-    queue->top = queue->bottom = NULL;
-
     return;
 }
 
@@ -1129,55 +1114,6 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
     return;
 }
 
-void coprocessorEnqueue(char *x) {
-
-    #ifdef DEBUG_FUNCTION_CALLS
-        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: coprocessorEnqueue");
-    #endif
-
-    struct Node *ptr = malloc(sizeof(struct Node));
-
-    ptr->data = strdup(x);
-    ptr->next = NULL;
-
-    if (queue->top == NULL && queue->bottom == NULL) {
-
-      queue->top = queue->bottom = ptr;
-
-      return;
-    }
-
-    queue->top->next = ptr;
-    queue->top = ptr;
-}
-
-char* coprocessorDequeue() {
-
-    #ifdef DEBUG_FUNCTION_CALLS
-        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: coprocessorDequeue");
-    #endif
-
-    if (queue->bottom == NULL) {
-
-        return 0;
-    }
-
-    struct Node *ptr = malloc(sizeof(struct Node));
-    ptr = queue->bottom;
-
-    if (queue->top == queue->bottom) {
-
-        queue->top=NULL;
-    }
-
-    queue->bottom = queue->bottom->next;
-    char *dequeued = malloc(strlen(ptr->data) * sizeof(char));
-    strcpy(dequeued, ptr->data);
-    free(ptr);
-
-    return dequeued;
-}
-
 void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     #ifdef DEBUG_FUNCTION_CALLS
@@ -1198,18 +1134,6 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
-
-    if (asyncCallActive) {
-
-        // #ifdef DEBUGGING
-            writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync: async call already active, queueing:");
-            writeSerialPortDebug(boutRefNum, functionCallMessage);
-        // #endif
-
-        coprocessorEnqueue(functionCallMessage);
-
-        return;
-    }
 
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, functionCallMessage);
@@ -1282,24 +1206,4 @@ void coprocessorEventLoopActions() {
     #endif
 
     asyncCallback();
-
-    // now that we're done calling back from the previous async call, we need to see if we have
-    // any other async calls queued up.
-    // TODO: this only supports void callbacks, we have more work to do in the queue if we want
-    // to carry forward other callback functions
-    if (queue->bottom != NULL) {
-
-        char *queueOutput = coprocessorDequeue();
-
-        void writeToCoprocessorAsyncCallback() {
-
-            #ifdef DEBUGGING
-                writeSerialPortDebug(boutRefNum, "SECONDARY VOID writeToCoprocessorAsyncCallback");
-            #endif
-        }
-
-        asyncCallback = &writeToCoprocessorAsyncCallback;
-
-        writeToCoprocessorAsync("VFUNCTION", queueOutput);
-    }
 }
