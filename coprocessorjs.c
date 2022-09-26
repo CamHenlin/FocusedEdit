@@ -1290,10 +1290,6 @@ void coprocessorEventLoopActions() {
         return;
     }
 
-    // return to default state
-    asyncCallComplete = false;
-    asyncCallActive = false;
-
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, "coprocessorEventLoopActions: calling back");
     #endif
@@ -1319,4 +1315,8 @@ void coprocessorEventLoopActions() {
 
         writeToCoprocessorAsync("VFUNCTION", queueOutput);
     }
+
+    // return to default state
+    asyncCallComplete = false;
+    asyncCallActive = false;
 }
