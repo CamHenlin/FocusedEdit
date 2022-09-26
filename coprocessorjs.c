@@ -376,7 +376,7 @@ void getReturnValueFromResponse(char *response, char *operation, char *output) {
 
     char call_id[32];
     sprintf(call_id, "%d", call_counter - 1);
-    
+
     #ifdef PRINT_ERRORS
         char *err = _getReturnValueFromResponse(response, application_id, call_id, operation, output);
 
@@ -1022,7 +1022,8 @@ void writeToCoprocessorAsync(char* operation, char* operand) {
 
     // over-allocate by 1kb for the operand (which could be an entire nodejs app) + message template wrapper
     // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
-    char messageToSend[strlen(operand) + 1024];
+    char *messageToSend = malloc(MAX_RECEIVE_SIZE);
+    memset(messageToSend, 0, MAX_RECEIVE_SIZE);
 
     sprintf(call_id, "%d", call_counter++);
 
@@ -1039,6 +1040,8 @@ void writeToCoprocessorAsync(char* operation, char* operand) {
     #else
         writeSerialPortAsync(messageToSend);
     #endif
+
+    free(messageToSend);
 
     return;
 }

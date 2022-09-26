@@ -13,7 +13,8 @@ const networkInterfaces = os.networkInterfaces();
 let validAddresses = []
 
 const port = 3000
-const DEBUGGING = true
+const DEBUGGING = false
+const MAX_RETRY = 5
 
 const html = `
 <html>
@@ -189,7 +190,7 @@ const insertStringToBuffer = (string, startPosition, endPosition) => {
 
 class FocusedEdit {
 
-    insertStringToBuffer (string, startPosition, endPosition, callIndex) {
+    insertStringToBuffer (string, startPosition, endPosition, callIndex, retryCounter) {
 
         if (!string || string === `` || !startPosition || !endPosition || !callIndex) {
 
@@ -205,7 +206,7 @@ class FocusedEdit {
 
         // we have to track the call index because sometimes the serial port can be slow,
         // and calls will come in out of order. If we're not ready for the call, rerun it in 50ms
-        if (Number(callIndex) !== coprocessorCallIndex) {
+        if (Number(callIndex) !== coprocessorCallIndex && (!retryCounter || retryCounter < MAX_RETRY)) {
 
             if (DEBUGGING) {
 
@@ -214,11 +215,17 @@ class FocusedEdit {
 
             return setTimeout(() => {
 
-                this.insertStringToBuffer(string, startPosition, endPosition, callIndex)
+                this.insertStringToBuffer(string, startPosition, endPosition, callIndex, retryCounter)
             }, 50)
         }
 
-        coprocessorCallIndex++
+        if (retryCounter && retryCounter > MAX_RETRY) {
+
+            coprocessorCallIndex = Number(callIndex)
+        } else {
+
+            coprocessorCallIndex++
+        }
 
         insertStringToBuffer(string, Number(startPosition), Number(endPosition))
 
