@@ -24,6 +24,7 @@ char *application_id;
 int call_counter = 0;
 Boolean asyncCallActive = false;
 Boolean asyncCallComplete = false;
+Boolean system7OrGreater = false;
 void (*asyncCallback)();
 
 struct Node {
@@ -917,6 +918,23 @@ void setupCoprocessor(char *applicationId, const char *serialDeviceName) {
     queue = malloc(sizeof(struct Queue));
     queue->top = queue->bottom = NULL;
 
+    SysEnvRec sysEnvironment;
+
+    SysEnvirons(2, &sysEnvironment);
+
+    #ifdef DEBUGGING
+        char x[255];
+        sprintf(x, "sysEnviron systemVersion: %02X", sysEnvironment.systemVersion);
+        writeSerialPortDebug(boutRefNum, x);
+    #endif
+
+    // if we're on system 7 or later, we can only run one async request a time. everything else must reside in a
+    // queue and get popped off repeatedly
+    if (sysEnvironment.systemVersion > 0x0608) {
+
+        system7OrGreater = true;
+    }
+
     return;
 }
 
@@ -1106,7 +1124,6 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
 
-
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, functionCallMessage);
     #endif
@@ -1199,12 +1216,12 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
 
-    if (asyncCallActive) {
+    if (asyncCallActive && system7OrGreater) {
 
-        // #ifdef DEBUGGING
+        #ifdef DEBUGGING
             writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync: async call already active, queueing:");
             writeSerialPortDebug(boutRefNum, functionCallMessage);
-        // #endif
+        #endif
 
         coprocessorEnqueue(functionCallMessage);
 
