@@ -870,8 +870,18 @@ void writeSerialPortAsync(const char* stringToWrite) {
         writeSerialPortDebug(boutRefNum, "writeSerialPortAsync");
     #endif
 
-    outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
-    outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
+    free(writeString);
+    writeString = malloc(MAX_RECEIVE_SIZE);
+    memset(writeString, 0, MAX_RECEIVE_SIZE);
+    sprintf(writeString, "%s", stringToWrite);
+
+    void asyncIOCompletionCallback() {
+
+        asyncCallComplete = true;
+    }
+
+    outgoingSerialPortReference.ioBuffer = (Ptr)writeString;
+    outgoingSerialPortReference.ioReqCount = strlen(writeString);
     outgoingSerialPortReference.ioCompletion = &asyncIOCompletionCallback;
     asyncCallActive = true;
 
@@ -970,9 +980,10 @@ void writeToCoprocessor(char* operation, char* operand) {
     const char* messageTemplate = "%s;;;%s;;;%s;;;%s;;@@&&"; // see: https://github.com/CamHenlin/coprocessor.js/blob/main/index.js#L25
     char call_id[32];
 
-    // over-allocate by 1kb for the operand (which could be an entire nodejs app) + message template wrapper
+    // over-allocate by MAX_RECEIVE_SIZE for the operand (which could be an entire nodejs app) + message template wrapper
     // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
-    char messageToSend[strlen(operand) + 1024];
+    char *messageToSend = malloc(MAX_RECEIVE_SIZE);
+    memset(messageToSend, 0, MAX_RECEIVE_SIZE);
 
     sprintf(call_id, "%d", call_counter++);
 
@@ -989,6 +1000,8 @@ void writeToCoprocessor(char* operation, char* operand) {
     #else
         writeSerialPort(messageToSend);
     #endif
+
+    free(messageToSend);
 
     return;
 }
@@ -1209,9 +1222,10 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
     const char* functionTemplate = "%s&&&%s";
 
-    // over-allocate by 1kb for the operand (which could be whatever a programmer sends to this function) + message template wrapper
+    // over-allocate by MAX_RECEIVE_SIZE for the operand (which could be whatever a programmer sends to this function) + message template wrapper
     // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
-    char functionCallMessage[strlen(parameters) + 1024];
+    char *functionCallMessage = malloc(MAX_RECEIVE_SIZE);
+    memset(functionCallMessage, 0, MAX_RECEIVE_SIZE);
 
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
@@ -1224,6 +1238,7 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
         #endif
 
         coprocessorEnqueue(functionCallMessage);
+        free(functionCallMessage);
 
         return;
     }
@@ -1242,6 +1257,7 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
     asyncCallback = &writeToCoprocessorAsyncCallback;
 
     writeToCoprocessorAsync("VFUNCTION", functionCallMessage);
+    free(functionCallMessage);
 
     return;
 }
@@ -1302,7 +1318,8 @@ void coprocessorEventLoopActions() {
     // to carry forward other callback functions
     if (queue->bottom != NULL) {
 
-        char *queueOutput = coprocessorDequeue();
+        char *queueOutput = malloc(MAX_RECEIVE_SIZE);
+        queueOutput = coprocessorDequeue();
 
         void writeToCoprocessorAsyncCallback() {
 
@@ -1314,6 +1331,7 @@ void coprocessorEventLoopActions() {
         asyncCallback = &writeToCoprocessorAsyncCallback;
 
         writeToCoprocessorAsync("VFUNCTION", queueOutput);
+        free(queueOutput);
     }
 
     // return to default state
