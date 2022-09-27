@@ -149,7 +149,7 @@ void setupSerialPort(const char *name) {
     short serialPortInput = 0; // TODO: not realy sure what this should be - just incrementing from the last item here
 
     OSErr err = MacOpenDriver(serialPortOutputName, &serialPortOutput);
-    
+
     #ifdef PRINT_ERRORS
 
         char errMessage[100];
@@ -817,6 +817,8 @@ void readSerialPort(char* output) {
     return;
 }
 
+char *writeString;
+
 OSErr writeSerialPort(const char* stringToWrite) {
 
     #ifdef DEBUG_FUNCTION_CALLS
@@ -828,9 +830,24 @@ OSErr writeSerialPort(const char* stringToWrite) {
         writeSerialPortDebug(boutRefNum, "writeSerialPort");
     #endif
 
-    outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
-    outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
-    
+    if (system7OrGreater) {
+
+        free(writeString);
+        writeString = malloc(MAX_RECEIVE_SIZE);
+        memset(writeString, 0, MAX_RECEIVE_SIZE);
+        sprintf(writeString, "%s", stringToWrite);
+        outgoingSerialPortReference.ioBuffer = (Ptr)writeString;
+        outgoingSerialPortReference.ioReqCount = strlen(writeString);
+
+        // we set the async flag in case an async request comes in while we are shipping out a synchronous request
+        // if we don't do this on System 7 or newer, we will trash the output buffer and neither call will be in good shape
+        asyncCallActive = true;
+    } else {
+
+        outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
+        outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
+    }
+
     #ifdef DEBUGGING
 
         writeSerialPortDebug(boutRefNum, "attempting to write string to serial port");
@@ -841,7 +858,12 @@ OSErr writeSerialPort(const char* stringToWrite) {
     // PBWrite takes ioReqCount bytes from the buffer pointed to by ioBuffer and attempts to write them to the device driver having the reference number ioRefNum.
     // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset and the number of bytes actually written is returned in ioActCount.
     OSErr err = PBWrite((ParmBlkPtr)& outgoingSerialPortReference, 0);
-    
+
+    if (system7OrGreater) {
+
+        asyncCallActive = false;
+    }
+
     #ifdef PRINT_ERRORS
 
         char errMessage[100];
@@ -852,12 +874,13 @@ OSErr writeSerialPort(const char* stringToWrite) {
     return err;
 }
 
-char *writeString;
-
 void asyncIOCompletionCallback() {
 
+    #ifdef DEBUG_FUNCTION_CALLS
+        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: asyncIOCompletionCallback");
+    #endif
+
     asyncCallComplete = true;
-    KillIO(outgoingSerialPortReference.ioRefNum);
 }
 
 void writeSerialPortAsync(const char* stringToWrite) {
@@ -871,8 +894,20 @@ void writeSerialPortAsync(const char* stringToWrite) {
         writeSerialPortDebug(boutRefNum, "writeSerialPortAsync");
     #endif
 
-    outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
-    outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
+    if (system7OrGreater) {
+
+        free(writeString);
+        writeString = malloc(MAX_RECEIVE_SIZE);
+        memset(writeString, 0, MAX_RECEIVE_SIZE);
+        sprintf(writeString, "%s", stringToWrite);
+        outgoingSerialPortReference.ioBuffer = (Ptr)writeString;
+        outgoingSerialPortReference.ioReqCount = strlen(writeString);
+    } else {
+
+        outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
+        outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
+    }
+
     outgoingSerialPortReference.ioCompletion = &asyncIOCompletionCallback;
     asyncCallActive = true;
 
@@ -884,7 +919,8 @@ void writeSerialPortAsync(const char* stringToWrite) {
 
     // PBWrite Definition From Inside Macintosh Volume II-185:
     // PBWrite takes ioReqCount bytes from the buffer pointed to by ioBuffer and attempts to write them to the device driver having the reference number ioRefNum.
-    // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset and the number of bytes actually written is returned in ioActCount.
+    // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset
+    // and the number of bytes actually written is returned in ioActCount.
     PBWrite((ParmBlkPtr)& outgoingSerialPortReference, 1);
 
     #ifdef DEBUGGING
@@ -1315,6 +1351,8 @@ void coprocessorEventLoopActions() {
         asyncCallback = &writeToCoprocessorAsyncCallback;
 
         writeToCoprocessorAsync("VFUNCTION", queueOutput);
+
+        return;
     }
 
     // return to default state

@@ -13,7 +13,7 @@ const networkInterfaces = os.networkInterfaces();
 let validAddresses = []
 
 const port = 3000
-const DEBUGGING = false
+const DEBUGGING = true
 const MAX_RETRY = 5
 
 const html = `
@@ -87,6 +87,16 @@ const updateTextBuffer = () => {
             case 10:
 
                 sanitizedForOldMachineTextBuffer = `${sanitizedForOldMachineTextBuffer}${String.fromCharCode(13)}`
+                break
+            case 8212: // combined -- character, often auto-replaced on modern Macs
+
+                sanitizedForOldMachineTextBuffer = `${sanitizedForOldMachineTextBuffer}-`
+                break
+            // the next 2 are stylized open and close quotes, often auto-replaced on modern Macs
+            case 8220:
+            case 8221:
+
+                sanitizedForOldMachineTextBuffer = `${sanitizedForOldMachineTextBuffer}"`
                 break
             default:
 
