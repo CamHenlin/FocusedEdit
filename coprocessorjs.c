@@ -24,6 +24,7 @@ char *application_id;
 int call_counter = 0;
 Boolean asyncCallActive = false;
 Boolean asyncCallComplete = false;
+Boolean system7OrGreater = false;
 void (*asyncCallback)();
 
 struct Node {
@@ -102,7 +103,7 @@ void setupPBControlForSerialPort(short serialPortShort) {
     CntrlParam cb;
     cb.ioCRefNum = serialPortShort; // TODO: this is always 0 - does it matter? should we hard code 0 here? research
     cb.csCode = 8; // TODO: need to look up and document what csCode = 8 means
-    cb.csParam[0] = stop10 | noParity | data8 | baud19200; // 28.8k has been pretty reliable on my Macintosh Classic...
+    cb.csParam[0] = stop10 | noParity | data8 | baud28800; // 28.8k has been pretty reliable on my Macintosh Classic...
     OSErr err = PBControl ((ParmBlkPtr) & cb, 0); // PBControl definition: http://mirror.informatimago.com/next/developer.apple.com/documentation/mac/Networking/Networking-296.html
 
     #ifdef PRINT_ERRORS
@@ -148,7 +149,7 @@ void setupSerialPort(const char *name) {
     short serialPortInput = 0; // TODO: not realy sure what this should be - just incrementing from the last item here
 
     OSErr err = MacOpenDriver(serialPortOutputName, &serialPortOutput);
-    
+
     #ifdef PRINT_ERRORS
 
         char errMessage[100];
@@ -816,6 +817,8 @@ void readSerialPort(char* output) {
     return;
 }
 
+char *writeString;
+
 OSErr writeSerialPort(const char* stringToWrite) {
 
     #ifdef DEBUG_FUNCTION_CALLS
@@ -827,9 +830,24 @@ OSErr writeSerialPort(const char* stringToWrite) {
         writeSerialPortDebug(boutRefNum, "writeSerialPort");
     #endif
 
-    outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
-    outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
-    
+    if (system7OrGreater) {
+
+        free(writeString);
+        writeString = malloc(MAX_RECEIVE_SIZE);
+        memset(writeString, 0, MAX_RECEIVE_SIZE);
+        sprintf(writeString, "%s", stringToWrite);
+        outgoingSerialPortReference.ioBuffer = (Ptr)writeString;
+        outgoingSerialPortReference.ioReqCount = strlen(writeString);
+
+        // we set the async flag in case an async request comes in while we are shipping out a synchronous request
+        // if we don't do this on System 7 or newer, we will trash the output buffer and neither call will be in good shape
+        asyncCallActive = true;
+    } else {
+
+        outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
+        outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
+    }
+
     #ifdef DEBUGGING
 
         writeSerialPortDebug(boutRefNum, "attempting to write string to serial port");
@@ -840,7 +858,12 @@ OSErr writeSerialPort(const char* stringToWrite) {
     // PBWrite takes ioReqCount bytes from the buffer pointed to by ioBuffer and attempts to write them to the device driver having the reference number ioRefNum.
     // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset and the number of bytes actually written is returned in ioActCount.
     OSErr err = PBWrite((ParmBlkPtr)& outgoingSerialPortReference, 0);
-    
+
+    if (system7OrGreater) {
+
+        asyncCallActive = false;
+    }
+
     #ifdef PRINT_ERRORS
 
         char errMessage[100];
@@ -851,7 +874,14 @@ OSErr writeSerialPort(const char* stringToWrite) {
     return err;
 }
 
-char *writeString;
+void asyncIOCompletionCallback() {
+
+    #ifdef DEBUG_FUNCTION_CALLS
+        writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: asyncIOCompletionCallback");
+    #endif
+
+    asyncCallComplete = true;
+}
 
 void writeSerialPortAsync(const char* stringToWrite) {
 
@@ -860,22 +890,24 @@ void writeSerialPortAsync(const char* stringToWrite) {
     #endif
 
     #ifdef DEBUGGING
-
+        
         writeSerialPortDebug(boutRefNum, "writeSerialPortAsync");
     #endif
 
-    free(writeString);
-    writeString = malloc(MAX_RECEIVE_SIZE);
-    memset(writeString, 0, MAX_RECEIVE_SIZE);
-    sprintf(writeString, "%s", stringToWrite);
+    if (system7OrGreater) {
 
-    void asyncIOCompletionCallback() {
+        free(writeString);
+        writeString = malloc(MAX_RECEIVE_SIZE);
+        memset(writeString, 0, MAX_RECEIVE_SIZE);
+        sprintf(writeString, "%s", stringToWrite);
+        outgoingSerialPortReference.ioBuffer = (Ptr)writeString;
+        outgoingSerialPortReference.ioReqCount = strlen(writeString);
+    } else {
 
-        asyncCallComplete = true;
+        outgoingSerialPortReference.ioBuffer = (Ptr)stringToWrite;
+        outgoingSerialPortReference.ioReqCount = strlen(stringToWrite);
     }
 
-    outgoingSerialPortReference.ioBuffer = (Ptr)writeString;
-    outgoingSerialPortReference.ioReqCount = strlen(writeString);
     outgoingSerialPortReference.ioCompletion = &asyncIOCompletionCallback;
     asyncCallActive = true;
 
@@ -887,7 +919,7 @@ void writeSerialPortAsync(const char* stringToWrite) {
 
     // PBWrite Definition From Inside Macintosh Volume II-185:
     // PBWrite takes ioReqCount bytes from the buffer pointed to by ioBuffer and attempts to write them to the device driver having the reference number ioRefNum.
-    // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset 
+    // The drive number, if any, of the device to be written to is specified by ioVRefNum. After the write is completed, the position is returned in ioPosOffset
     // and the number of bytes actually written is returned in ioActCount.
     PBWrite((ParmBlkPtr)& outgoingSerialPortReference, 1);
 
@@ -922,6 +954,23 @@ void setupCoprocessor(char *applicationId, const char *serialDeviceName) {
     // async operation at a time
     queue = malloc(sizeof(struct Queue));
     queue->top = queue->bottom = NULL;
+
+    SysEnvRec sysEnvironment;
+
+    SysEnvirons(2, &sysEnvironment);
+
+    #ifdef DEBUGGING
+        char x[255];
+        sprintf(x, "sysEnviron systemVersion: %02X", sysEnvironment.systemVersion);
+        writeSerialPortDebug(boutRefNum, x);
+    #endif
+
+    // if we're on system 7 or later, we can only run one async request a time. everything else must reside in a
+    // queue and get popped off repeatedly
+    if (sysEnvironment.systemVersion > 0x0608) {
+
+        system7OrGreater = true;
+    }
 
     return;
 }
@@ -960,8 +1009,7 @@ void writeToCoprocessor(char* operation, char* operand) {
 
     // over-allocate by 1kb for the operand (which could be an entire nodejs app) + message template wrapper
     // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
-    char *messageToSend = malloc(MAX_RECEIVE_SIZE);
-    memset(messageToSend, 0, MAX_RECEIVE_SIZE);
+    char messageToSend[strlen(operand) + 1024];
 
     sprintf(call_id, "%d", call_counter++);
 
@@ -978,8 +1026,6 @@ void writeToCoprocessor(char* operation, char* operand) {
     #else
         writeSerialPort(messageToSend);
     #endif
-
-    free(messageToSend);
 
     return;
 }
@@ -1051,7 +1097,7 @@ void callFunctionOnCoprocessor(char* functionName, char* parameters, char* outpu
     #ifdef DEBUG_FUNCTION_CALLS
         writeSerialPortDebug(boutRefNum, "DEBUG_FUNCTION_CALLS: callFunctionOnCoprocessor");
     #endif
-    
+
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, "callFunctionOnCoprocessor\n");
     #endif
@@ -1114,7 +1160,6 @@ void callFunctionOnCoprocessorAsync(char* functionName, char* parameters, char* 
 
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
-
 
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, functionCallMessage);
@@ -1180,7 +1225,7 @@ char* coprocessorDequeue() {
     }
 
     queue->bottom = queue->bottom->next;
-    char *dequeued = malloc(MAX_RECEIVE_SIZE);
+    char *dequeued = malloc(strlen(ptr->data) * sizeof(char));
     strcpy(dequeued, ptr->data);
     free(ptr);
 
@@ -1198,17 +1243,17 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
         writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync\n");
     #endif
+
     const char* functionTemplate = "%s&&&%s";
 
     // over-allocate by 1kb for the operand (which could be whatever a programmer sends to this function) + message template wrapper
     // and other associated info. wasting a tiny bit of memory here, could get more precise if memory becomes a problem.
-    char *functionCallMessage = malloc(MAX_RECEIVE_SIZE);
-    memset(functionCallMessage, 0, MAX_RECEIVE_SIZE);
+    char functionCallMessage[strlen(parameters) + 1024];
 
     // delimeter for function paramters is &&& - user must do this on their own via sprintf call or other construct - this is easiest for us to deal with
     sprintf(functionCallMessage, functionTemplate, functionName, parameters);
 
-    if (asyncCallActive) {
+    if (asyncCallActive && system7OrGreater) {
 
         #ifdef DEBUGGING
             writeSerialPortDebug(boutRefNum, "callVoidFunctionOnCoprocessorAsync: async call already active, queueing:");
@@ -1217,7 +1262,6 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
 
         coprocessorEnqueue(functionCallMessage);
 
-        free(functionCallMessage);
         return;
     }
 
@@ -1235,7 +1279,6 @@ void callVoidFunctionOnCoprocessorAsync(char* functionName, char* parameters) {
     asyncCallback = &writeToCoprocessorAsyncCallback;
 
     writeToCoprocessorAsync("VFUNCTION", functionCallMessage);
-    free(functionCallMessage);
 
     return;
 }
@@ -1284,10 +1327,6 @@ void coprocessorEventLoopActions() {
         return;
     }
 
-    // return to default state
-    asyncCallComplete = false;
-    asyncCallActive = false;
-
     #ifdef DEBUGGING
         writeSerialPortDebug(boutRefNum, "coprocessorEventLoopActions: calling back");
     #endif
@@ -1300,8 +1339,7 @@ void coprocessorEventLoopActions() {
     // to carry forward other callback functions
     if (queue->bottom != NULL) {
 
-        char *queueOutput = malloc(MAX_RECEIVE_SIZE);
-        queueOutput = coprocessorDequeue();
+        char *queueOutput = coprocessorDequeue();
 
         void writeToCoprocessorAsyncCallback() {
 
@@ -1313,6 +1351,11 @@ void coprocessorEventLoopActions() {
         asyncCallback = &writeToCoprocessorAsyncCallback;
 
         writeToCoprocessorAsync("VFUNCTION", queueOutput);
-        free(queueOutput);
+
+        return;
     }
+
+    // return to default state
+    asyncCallComplete = false;
+    asyncCallActive = false;
 }

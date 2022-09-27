@@ -13,6 +13,7 @@ let validAddresses = []
 
 const port = 3000
 const DEBUGGING = true
+const MAX_RETRY = 5
 
 const html = `
 <html>
@@ -85,6 +86,16 @@ const updateTextBuffer = () => {
             case 10:
 
                 sanitizedForOldMachineTextBuffer = `${sanitizedForOldMachineTextBuffer}${String.fromCharCode(13)}`
+                break
+            case 8212: // combined -- character, often auto-replaced on modern Macs
+
+                sanitizedForOldMachineTextBuffer = `${sanitizedForOldMachineTextBuffer}-`
+                break
+            // the next 2 are stylized open and close quotes, often auto-replaced on modern Macs
+            case 8220:
+            case 8221:
+
+                sanitizedForOldMachineTextBuffer = `${sanitizedForOldMachineTextBuffer}"`
                 break
             default:
 
@@ -160,6 +171,17 @@ const insertStringToBuffer = (string, startPosition, endPosition) => {
         case 65533:
 
             return
+        // delete -- this is how delete would work, but we don't actually create a delete key event ever in our mac app. 
+        // see the DoKeyDown function in TESample.c
+        // case 127:
+
+        //     if (startPosition === endPosition) {
+
+        //         endPosition++
+        //     }
+
+        //     textBuffer = `${textBuffer.slice(0, startPosition)}${textBuffer.slice(endPosition, textBuffer.length)}`
+        //     break
         default:
 
             textBuffer = `${textBuffer.slice(0, startPosition)}${string}${textBuffer.slice(endPosition, textBuffer.length)}`
@@ -177,7 +199,7 @@ const insertStringToBuffer = (string, startPosition, endPosition) => {
 
 class FocusedEdit {
 
-    insertStringToBuffer (string, startPosition, endPosition, callIndex) {
+    insertStringToBuffer (string, startPosition, endPosition, callIndex, retryCounter) {
 
         if (!string || string === `` || !startPosition || !endPosition || !callIndex) {
 
@@ -193,7 +215,7 @@ class FocusedEdit {
 
         // we have to track the call index because sometimes the serial port can be slow,
         // and calls will come in out of order. If we're not ready for the call, rerun it in 50ms
-        if (Number(callIndex) !== coprocessorCallIndex) {
+        if (Number(callIndex) !== coprocessorCallIndex && (!retryCounter || retryCounter < MAX_RETRY)) {
 
             if (DEBUGGING) {
 
@@ -202,11 +224,17 @@ class FocusedEdit {
 
             return setTimeout(() => {
 
-                this.insertStringToBuffer(string, startPosition, endPosition, callIndex)
+                this.insertStringToBuffer(string, startPosition, endPosition, callIndex, retryCounter)
             }, 50)
         }
 
-        coprocessorCallIndex++
+        if (retryCounter && retryCounter > MAX_RETRY) {
+
+            coprocessorCallIndex = Number(callIndex)
+        } else {
+
+            coprocessorCallIndex++
+        }
 
         insertStringToBuffer(string, Number(startPosition), Number(endPosition))
 

@@ -17,3 +17,7 @@ void coprocessorEventLoopActions();
 char *strtokm(char *str, const char *delim);
 
 OSErr closeSerialPort();
+
+Boolean asyncCallActive;
+
+Boolean system7OrGreater;
