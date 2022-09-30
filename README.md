@@ -1,6 +1,8 @@
 # FocusedEdit
 FocusedEdit is a software package for classic Macintosh (System 2.0 through MacOS 9.2.2) systems to provide a bidirectional text editor from the Mac to modern web browsers via the serial port, utilizing [https://github.com/CamHenlin/coprocessor.js](CoprocessorJS)
 
+![focusededit boxart](https://user-images.githubusercontent.com/1225579/193198997-9f9adf02-e587-46a1-aa6a-0ad3fc980316.png)
+
 ## How to use FocusedEdit
 I wrote an [article on my blog](https://henlin.net/2022/09/28/Introducing-FocusedEdit-for-classic-Macintosh/) outlining how to get up and running.
 
@@ -10,6 +12,7 @@ FocusedEdit is built on a lot of technologies. The READMEs of each of these is e
 - [Retro68](https://github.com/autc04/Retro68) - a GCC-based cross compilation env for classic Macintosh systems
 - [CoprocessorJS](https://github.com/CamHenlin/coprocessor.js) - a library that allows us to handle nodejs workloads sent over a serial port
 - [serialperformanceanalyzer](https://github.com/CamHenlin/serialperformanceanalyzer) - used to analyze the performance of many different parts of the application during its development lifecycle
+- [TESample](https://github.com/CamHenlin/TESample) - this is a basic Macintosh Toolbox demo application that the text editing portion of FocusedEdit is essentially riffing off of
 
 ## Limitations / areas for improvement
 FocusedEdit is 100% usable and I've been using it daily to write out long slack messages, confluence docs, emails since mid 2022, but it could be even better with your help:
