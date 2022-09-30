@@ -1,5 +1,5 @@
 # FocusedEdit
-FocusedEdit is a software package for classic Macintosh (System 2.0 through MacOS 9.2.2) systems to provide a bidirectional text editor from the Mac to modern web browsers via the serial port, utilizing [https://github.com/CamHenlin/coprocessor.js](CoprocessorJS)
+FocusedEdit is a software package for classic Macintosh (System 2.0 through MacOS 9.2.2) systems to provide a bidirectional text editor from the Mac to modern web browsers via the serial port, utilizing [CoprocessorJS](https://github.com/CamHenlin/coprocessor.js)
 
 ![focusededit boxart](https://user-images.githubusercontent.com/1225579/193201468-da7a2685-5357-4d86-8bcf-1b6c229ce7ac.png)
 
