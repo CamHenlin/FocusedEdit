@@ -13,7 +13,7 @@ const networkInterfaces = os.networkInterfaces();
 let validAddresses = []
 
 const port = 3000
-const DEBUGGING = true
+const DEBUGGING = false
 const MAX_RETRY = 5
 
 const html = `
@@ -209,7 +209,7 @@ class FocusedEdit {
 
         if (DEBUGGING) {
 
-            console.log(`insertStringToBuffer(${string}, ${startPosition}, ${endPosition}, ${callIndex}): ASCII: ${String.fromCharCode(string)}`)
+            console.log(`insertStringToBuffer(${string}, ${startPosition}, ${endPosition}, ${callIndex}): coprocessorCallIndex: ${coprocessorCallIndex}, ASCII: ${String.fromCharCode(string)}`)
         }
 
         string = String.fromCharCode(string)
@@ -225,7 +225,12 @@ class FocusedEdit {
 
             return setTimeout(() => {
 
-                this.insertStringToBuffer(string, startPosition, endPosition, callIndex, retryCounter)
+                if (!retryCounter) {
+
+                    retryCounter = 0
+                }
+
+                this.insertStringToBuffer(string, startPosition, endPosition, callIndex, retryCounter++)
             }, 50)
         }
 
