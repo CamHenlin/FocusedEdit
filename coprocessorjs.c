@@ -1216,7 +1216,7 @@ char* coprocessorDequeue() {
         return 0;
     }
 
-    struct Node *ptr = malloc(sizeof(struct Node));
+    struct Node *ptr;
     ptr = queue->bottom;
 
     if (queue->top == queue->bottom) {
@@ -1225,8 +1225,8 @@ char* coprocessorDequeue() {
     }
 
     queue->bottom = queue->bottom->next;
-    char *dequeued = malloc(strlen(ptr->data) * sizeof(char));
-    strcpy(dequeued, ptr->data);
+    char *dequeued = strdup(ptr->data);
+    free(ptr->data);
     free(ptr);
 
     return dequeued;
@@ -1351,6 +1351,8 @@ void coprocessorEventLoopActions() {
         asyncCallback = &writeToCoprocessorAsyncCallback;
 
         writeToCoprocessorAsync("VFUNCTION", queueOutput);
+
+        free(queueOutput);
 
         return;
     }
