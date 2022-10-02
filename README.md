@@ -4,7 +4,7 @@ FocusedEdit is a software package for classic Macintosh (System 2.0 through MacO
 ![focusededit boxart](https://user-images.githubusercontent.com/1225579/193201468-da7a2685-5357-4d86-8bcf-1b6c229ce7ac.png)
 
 ## How to use FocusedEdit
-I wrote an [article on my blog](https://henlin.net/2022/09/28/Introducing-FocusedEdit-for-classic-Macintosh/) outlining how to get up and running.
+I wrote an [article on my blog](https://henlin.net/2022/10/02/Introducing-FocusedEdit-for-classic-Macintosh/) outlining how to get up and running.
 
 ## Technologies
 FocusedEdit is built on a lot of technologies. The READMEs of each of these is each worth familiarizing yourself with if you would like to contribute to FocusedEdit:
